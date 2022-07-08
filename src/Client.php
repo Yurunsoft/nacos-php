@@ -13,7 +13,7 @@ use Yurunsoft\Nacos\Provider\Auth\AuthProvider;
 use Yurunsoft\Nacos\Provider\BaseProvider;
 use Yurunsoft\Nacos\Provider\Config\ConfigProvider;
 use Yurunsoft\Nacos\Provider\Instance\InstanceProvider;
-use Yurunsoft\Nacos\Provider\Namespace\NamespaceProvider;
+use Yurunsoft\Nacos\Provider\Ns\NamespaceProvider;
 use Yurunsoft\Nacos\Provider\Operator\OperatorProvider;
 use Yurunsoft\Nacos\Provider\Service\ServiceProvider;
 

@@ -6,7 +6,10 @@ namespace Yurunsoft\Nacos\Provider\Config\Model;
 
 trait THistoryItem
 {
-    protected string $id = '';
+    /**
+     * @var string|int
+     */
+    protected $id = '';
 
     protected int $lastId = -1;
 
@@ -34,7 +37,10 @@ trait THistoryItem
 
     protected string $type = '';
 
-    public function getId(): string
+    /**
+     * @return string|int
+     */
+    public function getId()
     {
         return $this->id;
     }

@@ -18,6 +18,13 @@ jobs:
       - name: Prepare
         run: |
           docker-compose -f .github/docker-compose.yml up -d
+      - name: Wait for container
+        uses: stringbean/docker-healthcheck-action@v1
+        with:
+          container: nacos
+          wait-time: 120
+          require-status: running
+          require-healthy: true
       - name: Test PHP 8.1
         if: ${{ always() }}
         run: |

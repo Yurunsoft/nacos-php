@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Namespace;
+namespace Yurunsoft\Nacos\Provider\Ns;
 
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestMethod;
 use Yurunsoft\Nacos\Provider\BaseProvider;
-use Yurunsoft\Nacos\Provider\Namespace\Model\NamespaceItem;
+use Yurunsoft\Nacos\Provider\Ns\Model\NamespaceItem;
 
 class NamespaceProvider extends BaseProvider
 {

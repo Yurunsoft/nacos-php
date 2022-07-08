@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Namespace\Model;
+namespace Yurunsoft\Nacos\Provider\Ns\Model;
 
 use Yurunsoft\Nacos\Model\BaseModel;
 
