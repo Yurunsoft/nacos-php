@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Config;
+namespace Yurun\Nacos\Provider\Config;
 
+use Yurun\Nacos\Provider\BaseProvider;
+use Yurun\Nacos\Provider\Config\Model\HistoryListResponse;
+use Yurun\Nacos\Provider\Config\Model\HistoryResponse;
+use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
+use Yurun\Nacos\Provider\Config\Model\ListenerResponseItem;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestMethod;
-use Yurunsoft\Nacos\Provider\BaseProvider;
-use Yurunsoft\Nacos\Provider\Config\Model\HistoryListResponse;
-use Yurunsoft\Nacos\Provider\Config\Model\HistoryResponse;
-use Yurunsoft\Nacos\Provider\Config\Model\ListenerRequest;
-use Yurunsoft\Nacos\Provider\Config\Model\ListenerResponseItem;
 
 class ConfigProvider extends BaseProvider
 {

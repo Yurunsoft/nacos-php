@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Instance\Model;
+namespace Yurun\Nacos\Provider\Instance\Model;
 
+use Yurun\Nacos\Provider\Model\BaseResponse;
 use Yurun\Util\YurunHttp\Http\Response;
-use Yurunsoft\Nacos\Provider\Model\BaseResponse;
 
 class ListResponse extends BaseResponse
 {

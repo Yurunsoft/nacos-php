@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider;
+namespace Yurun\Nacos\Provider;
 
-use Yurunsoft\Nacos\Client;
+use Yurun\Nacos\Client;
 
 abstract class BaseProvider
 {

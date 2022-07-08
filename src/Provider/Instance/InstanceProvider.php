@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Instance;
+namespace Yurun\Nacos\Provider\Instance;
 
+use Yurun\Nacos\Provider\BaseProvider;
+use Yurun\Nacos\Provider\Instance\Model\DetailResponse;
+use Yurun\Nacos\Provider\Instance\Model\ListResponse;
+use Yurun\Nacos\Provider\Instance\Model\RsInfo;
+use Yurun\Nacos\Util\StringUtil;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestMethod;
-use Yurunsoft\Nacos\Provider\BaseProvider;
-use Yurunsoft\Nacos\Provider\Instance\Model\DetailResponse;
-use Yurunsoft\Nacos\Provider\Instance\Model\ListResponse;
-use Yurunsoft\Nacos\Provider\Instance\Model\RsInfo;
-use Yurunsoft\Nacos\Util\StringUtil;
 
 class InstanceProvider extends BaseProvider
 {

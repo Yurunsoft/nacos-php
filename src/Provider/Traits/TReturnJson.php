@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Traits;
+namespace Yurun\Nacos\Provider\Traits;
 
+use Yurun\Nacos\Exception\NacosApiException;
 use Yurun\Util\YurunHttp\Http\Response;
-use Yurunsoft\Nacos\Exception\NacosApiException;
 
 trait TReturnJson
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Config\Model;
+namespace Yurun\Nacos\Provider\Config\Model;
 
 use Stringable;
 

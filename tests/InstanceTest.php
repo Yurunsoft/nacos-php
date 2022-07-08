@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Test;
+namespace Yurun\Nacos\Test;
 
-use Yurunsoft\Nacos\Provider\Instance\InstanceProvider;
-use Yurunsoft\Nacos\Provider\Instance\Model\RsInfo;
+use Yurun\Nacos\Provider\Instance\InstanceProvider;
+use Yurun\Nacos\Provider\Instance\Model\RsInfo;
 
 class InstanceTest extends BaseTest
 {

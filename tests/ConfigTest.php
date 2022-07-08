@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Test;
+namespace Yurun\Nacos\Test;
 
 use Swoole\Coroutine;
 use function Swoole\Coroutine\run;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\StatusCode;
-use Yurunsoft\Nacos\Exception\NacosApiException;
-use Yurunsoft\Nacos\Provider\Config\ConfigProvider;
-use Yurunsoft\Nacos\Provider\Config\Model\HistoryItem;
-use Yurunsoft\Nacos\Provider\Config\Model\ListenerRequest;
+use Yurun\Nacos\Exception\NacosApiException;
+use Yurun\Nacos\Provider\Config\ConfigProvider;
+use Yurun\Nacos\Provider\Config\Model\HistoryItem;
+use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
 
 class ConfigTest extends BaseTest
 {

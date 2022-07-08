@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Ns\Model;
+namespace Yurun\Nacos\Provider\Ns\Model;
 
-use Yurunsoft\Nacos\Model\BaseModel;
+use Yurun\Nacos\Model\BaseModel;
 
 class NamespaceItem extends BaseModel
 {

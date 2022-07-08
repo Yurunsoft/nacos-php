@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Model;
+namespace Yurun\Nacos\Model;
 
 use JsonSerializable;
-use Yurunsoft\Nacos\Provider\Traits\TInitProperties;
+use Yurun\Nacos\Provider\Traits\TInitProperties;
 
 abstract class BaseModel implements JsonSerializable
 {

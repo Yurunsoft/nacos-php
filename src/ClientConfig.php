@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos;
+namespace Yurun\Nacos;
 
-use Yurunsoft\Nacos\Model\BaseModel;
+use Yurun\Nacos\Model\BaseModel;
 
 class ClientConfig extends BaseModel
 {

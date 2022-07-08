@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos;
+namespace Yurun\Nacos;
 
+use Yurun\Nacos\Exception\NacosApiException;
+use Yurun\Nacos\Exception\NacosException;
+use Yurun\Nacos\Provider\Auth\AuthProvider;
+use Yurun\Nacos\Provider\BaseProvider;
+use Yurun\Nacos\Provider\Config\ConfigProvider;
+use Yurun\Nacos\Provider\Instance\InstanceProvider;
+use Yurun\Nacos\Provider\Ns\NamespaceProvider;
+use Yurun\Nacos\Provider\Operator\OperatorProvider;
+use Yurun\Nacos\Provider\Service\ServiceProvider;
 use Yurun\Util\HttpRequest;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestHeader;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\StatusCode;
 use Yurun\Util\YurunHttp\Http\Response;
-use Yurunsoft\Nacos\Exception\NacosApiException;
-use Yurunsoft\Nacos\Exception\NacosException;
-use Yurunsoft\Nacos\Provider\Auth\AuthProvider;
-use Yurunsoft\Nacos\Provider\BaseProvider;
-use Yurunsoft\Nacos\Provider\Config\ConfigProvider;
-use Yurunsoft\Nacos\Provider\Instance\InstanceProvider;
-use Yurunsoft\Nacos\Provider\Ns\NamespaceProvider;
-use Yurunsoft\Nacos\Provider\Operator\OperatorProvider;
-use Yurunsoft\Nacos\Provider\Service\ServiceProvider;
 
 /**
  * @property AuthProvider      $auth

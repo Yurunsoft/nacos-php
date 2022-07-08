@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Config\Model;
+namespace Yurun\Nacos\Provider\Config\Model;
 
-use Yurunsoft\Nacos\Provider\Model\BaseRequest;
+use Yurun\Nacos\Provider\Model\BaseRequest;
 
 class ListenerRequest extends BaseRequest
 {

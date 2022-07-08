@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Test;
+namespace Yurun\Nacos\Test;
 
-use Yurunsoft\Nacos\Client;
-use Yurunsoft\Nacos\ClientConfig;
-use Yurunsoft\Nacos\Provider\Auth\AuthProvider;
+use Yurun\Nacos\Client;
+use Yurun\Nacos\ClientConfig;
+use Yurun\Nacos\Provider\Auth\AuthProvider;
 
 class AuthTest extends BaseTest
 {

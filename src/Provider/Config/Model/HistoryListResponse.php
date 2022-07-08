@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Config\Model;
+namespace Yurun\Nacos\Provider\Config\Model;
 
+use Yurun\Nacos\Provider\Model\BaseResponse;
 use Yurun\Util\YurunHttp\Http\Response;
-use Yurunsoft\Nacos\Provider\Model\BaseResponse;
 
 class HistoryListResponse extends BaseResponse
 {

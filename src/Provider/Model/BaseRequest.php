@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Model;
+namespace Yurun\Nacos\Provider\Model;
 
 abstract class BaseRequest
 {

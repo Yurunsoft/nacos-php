@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Model;
+namespace Yurun\Nacos\Provider\Model;
 
 use JsonSerializable;
 use Yurun\Util\YurunHttp\Http\Response;

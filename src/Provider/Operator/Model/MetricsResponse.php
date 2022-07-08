@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Operator\Model;
+namespace Yurun\Nacos\Provider\Operator\Model;
 
-use Yurunsoft\Nacos\Provider\Model\BaseResponse;
+use Yurun\Nacos\Provider\Model\BaseResponse;
 
 class MetricsResponse extends BaseResponse
 {

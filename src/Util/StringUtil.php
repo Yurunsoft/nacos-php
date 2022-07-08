@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Util;
+namespace Yurun\Nacos\Util;
 
 class StringUtil
 {

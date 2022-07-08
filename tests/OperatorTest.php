@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Test;
+namespace Yurun\Nacos\Test;
 
-use Yurunsoft\Nacos\Provider\Operator\OperatorProvider;
+use Yurun\Nacos\Provider\Operator\OperatorProvider;
 
 class OperatorTest extends BaseTest
 {

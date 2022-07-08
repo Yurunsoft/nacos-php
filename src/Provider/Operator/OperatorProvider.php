@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Operator;
+namespace Yurun\Nacos\Provider\Operator;
 
+use Yurun\Nacos\Provider\BaseProvider;
+use Yurun\Nacos\Provider\Operator\Model\Leader;
+use Yurun\Nacos\Provider\Operator\Model\MetricsResponse;
+use Yurun\Nacos\Provider\Operator\Model\Server;
+use Yurun\Nacos\Provider\Operator\Model\SwitchesResponse;
+use Yurun\Nacos\Util\StringUtil;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestMethod;
-use Yurunsoft\Nacos\Provider\BaseProvider;
-use Yurunsoft\Nacos\Provider\Operator\Model\Leader;
-use Yurunsoft\Nacos\Provider\Operator\Model\MetricsResponse;
-use Yurunsoft\Nacos\Provider\Operator\Model\Server;
-use Yurunsoft\Nacos\Provider\Operator\Model\SwitchesResponse;
-use Yurunsoft\Nacos\Util\StringUtil;
 
 class OperatorProvider extends BaseProvider
 {

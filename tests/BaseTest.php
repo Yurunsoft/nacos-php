@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Test;
+namespace Yurun\Nacos\Test;
 
 use PHPUnit\Framework\TestCase;
-use Yurunsoft\Nacos\Client;
-use Yurunsoft\Nacos\ClientConfig;
+use Yurun\Nacos\Client;
+use Yurun\Nacos\ClientConfig;
 
 abstract class BaseTest extends TestCase
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Service;
+namespace Yurun\Nacos\Provider\Service;
 
+use Yurun\Nacos\Provider\BaseProvider;
+use Yurun\Nacos\Provider\Service\Model\ListResponse;
+use Yurun\Nacos\Provider\Service\Model\ServiceDetailResponse;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestMethod;
-use Yurunsoft\Nacos\Provider\BaseProvider;
-use Yurunsoft\Nacos\Provider\Service\Model\ListResponse;
-use Yurunsoft\Nacos\Provider\Service\Model\ServiceDetailResponse;
 
 class ServiceProvider extends BaseProvider
 {

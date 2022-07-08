@@ -9,12 +9,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Yurunsoft\\Nacos\\": "src/"
+            "Yurun\\Nacos\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Yurunsoft\\Nacos\\Test\\": "tests/"
+            "Yurun\\Nacos\\Test\\": "tests/"
         }
     },
     "authors": [

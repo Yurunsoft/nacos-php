@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Instance\Model;
+namespace Yurun\Nacos\Provider\Instance\Model;
 
-use Yurunsoft\Nacos\Model\BaseModel;
+use Yurun\Nacos\Model\BaseModel;
 
 class Host extends BaseModel
 {

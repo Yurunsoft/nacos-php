@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Service\Model;
+namespace Yurun\Nacos\Provider\Service\Model;
 
-use Yurunsoft\Nacos\Model\BaseModel;
+use Yurun\Nacos\Model\BaseModel;
 
 class Cluster extends BaseModel
 {

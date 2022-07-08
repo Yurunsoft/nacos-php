@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Test;
+namespace Yurun\Nacos\Test;
 
-use Yurunsoft\Nacos\Provider\Ns\NamespaceProvider;
+use Yurun\Nacos\Provider\Ns\NamespaceProvider;
 
 class NamespaceTest extends BaseTest
 {

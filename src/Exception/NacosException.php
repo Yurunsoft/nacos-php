@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Exception;
+namespace Yurun\Nacos\Exception;
 
 class NacosException extends \Exception
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Test;
+namespace Yurun\Nacos\Test;
 
-use Yurunsoft\Nacos\Provider\Service\ServiceProvider;
+use Yurun\Nacos\Provider\Service\ServiceProvider;
 
 class ServiceTest extends BaseTest
 {

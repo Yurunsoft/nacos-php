@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Operator\Model;
+namespace Yurun\Nacos\Provider\Operator\Model;
 
-use Yurunsoft\Nacos\Model\BaseModel;
+use Yurun\Nacos\Model\BaseModel;
 
 class ServerRemoteAbility extends BaseModel
 {

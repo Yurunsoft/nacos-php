@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Instance\Model;
+namespace Yurun\Nacos\Provider\Instance\Model;
 
-use Yurunsoft\Nacos\Provider\Model\BaseResponse;
-use Yurunsoft\Nacos\Provider\Traits\TReturnJson;
+use Yurun\Nacos\Provider\Model\BaseResponse;
+use Yurun\Nacos\Provider\Traits\TReturnJson;
 
 class DetailResponse extends BaseResponse
 {

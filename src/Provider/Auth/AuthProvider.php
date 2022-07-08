@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yurunsoft\Nacos\Provider\Auth;
+namespace Yurun\Nacos\Provider\Auth;
 
+use Yurun\Nacos\Client;
+use Yurun\Nacos\Provider\Auth\Model\LoginResponse;
+use Yurun\Nacos\Provider\BaseProvider;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestMethod;
-use Yurunsoft\Nacos\Client;
-use Yurunsoft\Nacos\Provider\Auth\Model\LoginResponse;
-use Yurunsoft\Nacos\Provider\BaseProvider;
 
 class AuthProvider extends BaseProvider
 {
