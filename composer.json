@@ -2,7 +2,7 @@
     "name": "yurunsoft/nacos-php",
     "description": "Nacos PHP client, which also supports Swoole Coroutine",
     "type": "library",
-    "license": "Apache2",
+    "license": "Apache-2.0",
     "require": {
         "php": ">=7.4",
         "yurunsoft/yurun-http": "^4.3"

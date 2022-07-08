@@ -1,5 +1,11 @@
 # nacos-php
 
+[![Latest Version](https://img.shields.io/packagist/v/yurunsoft/nacos-php.svg)](https://packagist.org/packages/yurunsoft/nacos-php)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/yurunsoft/nacos-php/test/master)
+[![Php Version](https://img.shields.io/badge/php-%3E=7.4-brightgreen.svg)](https://secure.php.net/)
+[![Swoole Version](https://img.shields.io/badge/swoole-%3E=4.4.0-brightgreen.svg)](https://github.com/swoole/swoole-src)
+[![License](https://img.shields.io/badge/license-Apache2-brightgreen.svg)](https://github.com/yurunsoft/nacos-php/blob/master/LICENSE)
+
 [English](README.md) | **中文**
 
 Nacos PHP 客户端允许你访问 Nacos 服务，它支持服务发现和动态配置。
