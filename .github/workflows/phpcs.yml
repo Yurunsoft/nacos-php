@@ -1,0 +1,18 @@
+name: Coding Standards
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare
+        run: |
+          docker run --name swoole -d -v ${GITHUB_WORKSPACE}:/nacos-php -w /nacos-php phpswoole/swoole:4.8.10-php8.1
+          docker exec swoole composer update
+
+      - name: Coding Standards Tests
+        run: docker exec swoole ./vendor/bin/php-cs-fixer fix --dry-run --diff

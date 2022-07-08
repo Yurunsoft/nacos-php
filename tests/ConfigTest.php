@@ -26,15 +26,20 @@ class ConfigTest extends BaseTest
     public function testSet(): void
     {
         $this->assertTrue($this->getProvider()->set(self::DATA_ID, 'ConfigTest', 'value'));
+        usleep(100000); // If v1.3.x does not wait for set, it will not get the value
     }
 
+    /**
+     * @depends testSet
+     */
     public function testGet(): void
     {
-        $provider = $this->getProvider();
-        $this->assertTrue($provider->set(self::DATA_ID, 'ConfigTest', 'value'));
-        $this->assertEquals('value', $provider->get(self::DATA_ID, 'ConfigTest'));
+        $this->assertEquals('value', $this->getProvider()->get(self::DATA_ID, 'ConfigTest'));
     }
 
+    /**
+     * @depends testSet
+     */
     public function testDelete(): void
     {
         $provider = $this->getProvider();
@@ -49,6 +54,9 @@ class ConfigTest extends BaseTest
         }
     }
 
+    /**
+     * @depends testSet
+     */
     public function testListener(): void
     {
         $this->skipNoSwoole();
@@ -83,6 +91,8 @@ class ConfigTest extends BaseTest
     }
 
     /**
+     * @depends testSet
+     *
      * @return HistoryItem[]
      */
     public function testHistoryList(): array

@@ -25,6 +25,8 @@ class ClientConfig extends BaseModel
 
     protected bool $ssl = false;
 
+    protected bool $authorizationBearer = false;
+
     public function getHost(): string
     {
         return $this->host;
@@ -111,6 +113,18 @@ class ClientConfig extends BaseModel
     public function setSsl(bool $ssl): self
     {
         $this->ssl = $ssl;
+
+        return $this;
+    }
+
+    public function getAuthorizationBearer(): bool
+    {
+        return $this->authorizationBearer;
+    }
+
+    public function setAuthorizationBearer(bool $authorizationBearer): self
+    {
+        $this->authorizationBearer = $authorizationBearer;
 
         return $this;
     }

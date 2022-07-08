@@ -26,7 +26,7 @@ class AuthTest extends BaseTest
     {
         $auth = $this->getNewClient()->auth;
         $response = $auth->login();
-        $this->assertEquals($response->getAccessToken(), $auth->getAccessToken());
+        $this->assertEquals($response->getAccessToken() ?: (explode(' ', $response->getData())[1] ?? ''), $auth->getAccessToken());
     }
 
     public function testGetIsExpired(): void

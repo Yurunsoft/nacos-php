@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yurunsoft\Nacos;
 
 use Yurun\Util\HttpRequest;
+use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestHeader;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\StatusCode;
 use Yurun\Util\YurunHttp\Http\Response;
 use Yurunsoft\Nacos\Exception\NacosApiException;
@@ -84,6 +85,7 @@ class Client
      */
     public function request(string $path, $params = [], string $method = 'GET', array $headers = [], ?string $responseClass = null, bool $useAccessToken = true)
     {
+        $config = $this->getConfig();
         $url = $this->buildUrl($path);
         if ('GET' === $method) {
             $queryParams = $params;
@@ -92,7 +94,11 @@ class Client
             $queryParams = [];
         }
         if ($useAccessToken) {
-            $queryParams['accessToken'] = $this->auth->getAccessToken();
+            $queryParams['accessToken'] = $accessToken = $this->auth->getAccessToken();
+            if ($config->getAuthorizationBearer()) {
+                $this->httpRequest->header(RequestHeader::AUTHORIZATION, 'Bearer ' . $accessToken);
+            }
+            $this->httpRequest->header('accessToken', $accessToken);
         }
         if (!empty($queryParams)) {
             if (strpos($url, '?')) {
@@ -102,7 +108,6 @@ class Client
             }
             $url .= http_build_query($queryParams, '', '&');
         }
-        $config = $this->getConfig();
         $response = $this->httpRequest->timeout($config->getTimeout())->headers($headers)->send($url, $params, $method);
         // request failed
         if (!$response->success) {

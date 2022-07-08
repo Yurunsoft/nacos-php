@@ -17,6 +17,8 @@ class AuthProvider extends BaseProvider
 
     protected bool $accessTokenRequired = false;
 
+    protected string $accessToken = '';
+
     public function __construct(Client $client)
     {
         parent::__construct($client);
@@ -38,21 +40,27 @@ class AuthProvider extends BaseProvider
         ], RequestMethod::POST, [], LoginResponse::class, false);
 
         if ($cached) {
-            $this->expireTime = time() + $response->getTokenTtl();
             $this->lastLoginResponse = $response;
+            $accessToken = $response->getAccessToken();
+            if ('' === $accessToken) {
+                $accessToken = explode(' ', $response->getData())[1] ?? '';
+                $this->expireTime = time() + 1800;
+            } else {
+                $this->expireTime = time() + $response->getTokenTtl();
+            }
+            $this->accessToken = $accessToken;
         }
 
         return $response;
     }
 
-    public function getAccessToken(): string
+    public function getAccessToken(bool $autoUpdate = true): string
     {
-        return $this->login()->getAccessToken();
-    }
+        if ($autoUpdate && $this->isExpired()) {
+            $this->login();
+        }
 
-    public function setAccessToken(): string
-    {
-        return $this->login()->getAccessToken();
+        return $this->accessToken;
     }
 
     public function isExpired(): bool

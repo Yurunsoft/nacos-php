@@ -75,7 +75,10 @@ class ConfigProvider extends BaseProvider
         ], RequestMethod::GET, [], HistoryListResponse::class);
     }
 
-    public function history(string $nid, string $dataId, string $group, string $tenant = ''): HistoryResponse
+    /**
+     * @param string|int $nid
+     */
+    public function history($nid, string $dataId, string $group, string $tenant = ''): HistoryResponse
     {
         return $this->client->request(self::CONFIG_HISTORY_API_APTH, [
             'nid'    => $nid,
