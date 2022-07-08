@@ -1,0 +1,40 @@
+version: "3.4"
+services:
+    nacos:
+        container_name: "nacos"
+        image: nacos/nacos-server:${NACOS_VERSION}
+        environment:
+            MODE: standalone
+        ports:
+            - "8848:8848"
+            - "9848:9848"
+        healthcheck:
+            test: ["CMD", "curl -f http://127.0.0.1:8848/nacos"]
+            interval: 5s
+            timeout: 5s
+            retries: 6
+            start_period: 5s
+    php8.1:
+        container_name: "php8.1"
+        image: phpswoole/swoole:4.8.10-php8.1
+        environment:
+            NACOS_TEST_HOST: nacos
+        volumes:
+            - "${GITHUB_WORKSPACE}:/nacos-php:rw"
+        working_dir: /nacos-php
+    php8.0:
+        container_name: "php8.0"
+        image: phpswoole/swoole:4.8.10-php8.0
+        environment:
+            NACOS_TEST_HOST: nacos
+        volumes:
+            - "${GITHUB_WORKSPACE}:/nacos-php:rw"
+        working_dir: /nacos-php
+    php7.4:
+        container_name: "php7.4"
+        image: phpswoole/swoole:4.8.10-php7.4
+        environment:
+            NACOS_TEST_HOST: nacos
+        volumes:
+            - "${GITHUB_WORKSPACE}:/nacos-php:rw"
+        working_dir: /nacos-php
