@@ -14,9 +14,9 @@ class ListenerItem implements Stringable
 
     protected string $contentMD5 = '';
 
-    protected ?string $tenant = null;
+    protected string $tenant = '';
 
-    public function __construct(string $dataId, string $group, string $contentMD5 = '', ?string $tenant = null)
+    public function __construct(string $dataId, string $group, string $contentMD5 = '', string $tenant = '')
     {
         $this->dataId = $dataId;
         $this->group = $group;
@@ -47,7 +47,7 @@ class ListenerItem implements Stringable
     public function __toString(): string
     {
         $result = $this->dataId . "\x2" . $this->group . "\x2" . $this->contentMD5;
-        if (null !== $this->tenant) {
+        if ('' !== $this->tenant) {
             $result .= "\x2" . $this->tenant;
         }
         $result .= "\x1";

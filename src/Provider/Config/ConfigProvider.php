@@ -26,7 +26,7 @@ class ConfigProvider extends BaseProvider
         ])->body();
     }
 
-    public function set(string $dataId, string $group, string $content, string $tenant = '', ?string $type = null): bool
+    public function set(string $dataId, string $group, string $content, string $tenant = '', string $type = ''): bool
     {
         return 'true' === $this->client->request(self::CONFIG_API_APTH, [
             'dataId'  => $dataId,

@@ -13,7 +13,7 @@ class ListenerRequest extends BaseRequest
      */
     protected array $listeningConfigs;
 
-    public function addListener(string $dataId, string $group, string $contentMD5 = '', ?string $tenant = null): void
+    public function addListener(string $dataId, string $group, string $contentMD5 = '', string $tenant = ''): void
     {
         $this->listeningConfigs[] = new ListenerItem($dataId, $group, $contentMD5, $tenant);
     }
