@@ -127,7 +127,7 @@ class Client
         // Nacos error
         if (StatusCode::OK !== $response->getStatusCode()) {
             $body = $response->body();
-            $this->getLogger()->error(sprintf('Nacos error: [%d] %s. Request method[%s], url[%s], header:[%s], params:[%s]', $response->getStatusCode() , $body, $method, $url, json_encode($headers, \JSON_PRETTY_PRINT), json_encode($params, \JSON_PRETTY_PRINT)));
+            $this->getLogger()->error(sprintf('Nacos error: [%d] %s. Request method[%s], url[%s], header:[%s], params:[%s]', $response->getStatusCode(), $body, $method, $url, json_encode($headers, \JSON_PRETTY_PRINT), json_encode($params, \JSON_PRETTY_PRINT)));
 
             // json
             $result = json_decode($body, true);
