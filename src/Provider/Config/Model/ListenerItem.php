@@ -44,6 +44,34 @@ class ListenerItem implements Stringable
         return $this->tenant;
     }
 
+    public function setDataId(string $dataId): self
+    {
+        $this->dataId = $dataId;
+
+        return $this;
+    }
+
+    public function setGroup(string $group): self
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+
+    public function setContentMD5(string $contentMD5): self
+    {
+        $this->contentMD5 = $contentMD5;
+
+        return $this;
+    }
+
+    public function setTenant(string $tenant): self
+    {
+        $this->tenant = $tenant;
+
+        return $this;
+    }
+
     public function __toString(): string
     {
         $result = $this->dataId . "\x2" . $this->group . "\x2" . $this->contentMD5;

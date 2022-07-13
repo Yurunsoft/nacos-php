@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Yurun\Nacos\Test;
 
 use Swoole\Coroutine;
+use Swoole\Coroutine\Channel;
 use function Swoole\Coroutine\run;
-use Yurun\Util\YurunHttp\Http\Psr7\Consts\StatusCode;
 use Yurun\Nacos\Exception\NacosApiException;
+use Yurun\Nacos\Provider\Config\ConfigListener;
 use Yurun\Nacos\Provider\Config\ConfigProvider;
 use Yurun\Nacos\Provider\Config\Model\HistoryItem;
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
+use Yurun\Util\YurunHttp\Http\Psr7\Consts\StatusCode;
 
 class ConfigTest extends BaseTest
 {
@@ -120,5 +122,40 @@ class ConfigTest extends BaseTest
         $this->assertEquals($items[0]->getId(), $response->getId());
         $this->assertEquals(self::DATA_ID, $response->getDataId());
         $this->assertEquals(self::GROUP_ID, $response->getGroup());
+    }
+
+    /**
+     * @depends testSet
+     */
+    public function testConfigListener(): void
+    {
+        $this->skipNoSwoole();
+        $exception = null;
+        run(function () use (&$exception) {
+            try {
+                $num = mt_rand();
+                $configProvider = $this->getProvider();
+                $configProvider->set(self::DATA_ID, self::GROUP_ID, (string) $num);
+                usleep(100000); // If v1.3.x does not wait for set, it will not get the value
+                $content = (string) ($num + 1);
+                $listener = $configProvider->getConfigListener();
+                $channel = new Channel();
+                $listener->addListener(self::DATA_ID, self::GROUP_ID, '', function (ConfigListener $listener, string $dataId, string $group, string $tenant) use ($channel) {
+                    $listener->stop();
+                    $channel->push($listener->get($dataId, $group, $tenant));
+                });
+                Coroutine::create(function () use ($configProvider, $content) {
+                    usleep(1);
+                    $configProvider->set(self::DATA_ID, self::GROUP_ID, $content);
+                });
+                $listener->start();
+                $value = $channel->pop(5);
+                $this->assertEquals($content, $value);
+            } catch (\Throwable $exception) {
+            }
+        });
+        if ($exception) {
+            throw $exception;
+        }
     }
 }

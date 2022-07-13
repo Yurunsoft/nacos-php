@@ -27,6 +27,11 @@ class ClientConfig extends BaseModel
 
     protected bool $authorizationBearer = false;
 
+    /**
+     * Listener timeout time, in milliseconds.
+     */
+    protected int $listenerTimeout = 30000;
+
     public function getHost(): string
     {
         return $this->host;
@@ -125,6 +130,18 @@ class ClientConfig extends BaseModel
     public function setAuthorizationBearer(bool $authorizationBearer): self
     {
         $this->authorizationBearer = $authorizationBearer;
+
+        return $this;
+    }
+
+    public function getListenerTimeout(): int
+    {
+        return $this->listenerTimeout;
+    }
+
+    public function setListenerTimeout(int $listenerTimeout): self
+    {
+        $this->listenerTimeout = $listenerTimeout;
 
         return $this;
     }

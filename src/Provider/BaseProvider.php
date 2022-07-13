@@ -14,4 +14,9 @@ abstract class BaseProvider
     {
         $this->client = $client;
     }
+
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
 }

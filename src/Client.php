@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yurun\Nacos;
 
+use Psr\Log\LoggerInterface;
 use Yurun\Nacos\Exception\NacosApiException;
 use Yurun\Nacos\Exception\NacosException;
 use Yurun\Nacos\Provider\Auth\AuthProvider;
@@ -46,9 +47,12 @@ class Client
 
     protected HttpRequest $httpRequest;
 
-    public function __construct(ClientConfig $config)
+    protected Logger $logger;
+
+    public function __construct(ClientConfig $config, ?LoggerInterface $logger = null)
     {
         $this->clientConfig = $config;
+        $this->logger = new Logger($logger);
         $this->httpRequest = new HttpRequest();
     }
 
@@ -73,6 +77,11 @@ class Client
     public function getConfig(): ClientConfig
     {
         return $this->clientConfig;
+    }
+
+    public function getLogger(): Logger
+    {
+        return $this->logger;
     }
 
     /**
@@ -111,19 +120,22 @@ class Client
         $response = $this->httpRequest->timeout($config->getTimeout())->headers($headers)->send($url, $params, $method);
         // request failed
         if (!$response->success) {
+            $this->getLogger()->error(sprintf('Request failed [%d] %s. Request method[%s], url[%s], header:[%s], params:[%s]', $response->errno(), $response->error(), $method, $url, json_encode($headers, \JSON_PRETTY_PRINT), json_encode($params, \JSON_PRETTY_PRINT)));
             throw new NacosApiException(sprintf('Request failed [%d] %s', $response->errno(), $response->error()));
         }
 
         // Nacos error
         if (StatusCode::OK !== $response->getStatusCode()) {
+            $body = $response->body();
+            $this->getLogger()->error(sprintf('Nacos error: [%d] %s. Request method[%s], url[%s], header:[%s], params:[%s]', $response->getStatusCode() , $body, $method, $url, json_encode($headers, \JSON_PRETTY_PRINT), json_encode($params, \JSON_PRETTY_PRINT)));
+
             // json
-            $result = $response->json(true);
+            $result = json_decode($body, true);
             if (false !== $result && isset($result['message'], $result['status'])) {
                 throw new NacosApiException($result['message'], $result['status'], null, $response);
             }
 
             // not json
-            $body = $response->body();
             $statusCode = $response->getStatusCode();
             throw new NacosApiException('' === $body ? StatusCode::getReasonPhrase($statusCode) : $body, $statusCode, null, $response);
         }

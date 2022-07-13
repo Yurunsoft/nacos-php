@@ -17,6 +17,8 @@ class ConfigProvider extends BaseProvider
 
     public const CONFIG_HISTORY_API_APTH = 'nacos/v1/cs/history';
 
+    protected ?ConfigListener $configListener = null;
+
     public function get(string $dataId, string $group, string $tenant = ''): string
     {
         return $this->client->request(self::CONFIG_API_APTH, [
@@ -86,5 +88,10 @@ class ConfigProvider extends BaseProvider
             'group'  => $group,
             'tenant' => $tenant,
         ], RequestMethod::GET, [], HistoryResponse::class);
+    }
+
+    public function getConfigListener(): ConfigListener
+    {
+        return $this->configListener ??= new ConfigListener($this);
     }
 }

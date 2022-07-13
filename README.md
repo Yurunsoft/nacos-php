@@ -38,7 +38,7 @@ use Yurun\Nacos\ClientConfig;
 
 // The parameters of ClientConfig are all optional, the ones shown below are the default values
 // You can write only the configuration items you want to modify
-$client = new Client(new ClientConfig([
+$config = new ClientConfig([
     'host'                => '127.0.0.1',
     'port'                => 8848,
     'prefix'              => '/',
@@ -47,10 +47,45 @@ $client = new Client(new ClientConfig([
     'timeout'             => 60000, // Network request timeout time, in milliseconds
     'ssl'                 => false, // Whether to use ssl(https) requests
     'authorizationBearer' => false, // Whether to use the request header Authorization: Bearer {accessToken} to pass Token, older versions of Nacos need to be set to true
-]));
+    'listenerTimeout'     => 30000, // The config listener long polling timeout, in milliseconds
+]);
+// Instantiating the client
+$client = new Client($config);
+
+// Enable log, Support PSR-3
+$logger = new \Monolog\Logger();
+$client = new Client($config, $logger);
 ```
 
 ### Providers
+
+#### Config listener
+
+```php
+// Get config listener
+$listener = $client->config->getConfigListener();
+
+$dataId = 'dataId';
+$groupId = 'groupId';
+$tenant = '';
+
+// Add listening item
+$listener->addListener($dataId, $groupId, $tenant);
+// Add listening item with callback
+$listener->addListener($dataId, $groupId, $tenant, function (\Yurun\Nacos\Provider\Config\ConfigListener $listener, string $dataId, string $group, string $tenant) {
+    // $listener->stop();
+});
+
+// Start listening and do not continue the following statements until you stop
+$listener->start();
+
+// To get the configuration cache from the listener, you need to call it in another coroutine
+$listener->get($dataId);
+```
+
+#### Manual Listening Configuration
+
+> Recommend using the config listener
 
 ```php
 // Get provider from client

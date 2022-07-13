@@ -38,7 +38,7 @@ use Yurun\Nacos\ClientConfig;
 
 // ClientConfig 的参数全部为可选项，下面展示的都是默认值
 // 你可以只写你要修改的配置项
-$client = new Client(new ClientConfig([
+$config = new ClientConfig([
     'host'                => '127.0.0.1', // 主机名
     'port'                => 8848, // 端口号
     'prefix'              => '/', // 前缀
@@ -47,7 +47,14 @@ $client = new Client(new ClientConfig([
     'timeout'             => 60000, // 网络请求超时时间，单位：毫秒
     'ssl'                 => false, // 是否使用 ssl(https) 请求
     'authorizationBearer' => false, // 是否使用请求头 Authorization: Bearer {accessToken} 方式传递 Token，旧版本 Nacos 需要设为 true
-]));
+    'listenerTimeout'     => 30000, // 配置监听器长轮询超时时间，单位：毫秒
+]);
+// 实例化客户端
+$client = new Client($config);
+
+// 启用日志，支持 PSR-3
+$logger = new \Monolog\Logger();
+$client = new Client($config, $logger);
 ```
 
 ### 提供者
@@ -90,6 +97,34 @@ $client->config->delete('dataId', 'group', 'value');
 ```
 
 #### 监听配置
+
+##### 配置监听器
+
+```php
+// 获取监听器
+$listener = $client->config->getConfigListener();
+
+$dataId = 'dataId';
+$groupId = 'groupId';
+$tenant = '';
+
+// 增加监听项
+$listener->addListener($dataId, $groupId, $tenant);
+// 带回调监听配置
+$listener->addListener($dataId, $groupId, $tenant, function (\Yurun\Nacos\Provider\Config\ConfigListener $listener, string $dataId, string $group, string $tenant) {
+    // $listener->stop();
+});
+
+// 开始监听，在停止之前不会继续执行下面的语句
+$listener->start();
+
+// 从监听器中获取配置缓存，需要在其它协程中调用
+$listener->get($dataId);
+```
+
+##### 手动监听配置
+
+> 推荐使用配置监听器
 
 ```php
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
