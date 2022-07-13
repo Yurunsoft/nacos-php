@@ -100,7 +100,7 @@ $client->config->delete('dataId', 'group', 'value');
 ##### 配置监听器
 
 ```php
-use Yurun\Nacos\Provider\Config\ConfigListener
+use Yurun\Nacos\Provider\Config\ConfigListener;
 use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 
 // 获取监听器

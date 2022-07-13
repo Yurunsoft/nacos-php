@@ -61,7 +61,7 @@ $client = new Client($config, $logger);
 #### Config listener
 
 ```php
-use Yurun\Nacos\Provider\Config\ConfigListener
+use Yurun\Nacos\Provider\Config\ConfigListener;
 use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 
 // Get config listener

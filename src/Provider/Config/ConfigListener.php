@@ -19,7 +19,7 @@ class ConfigListener
     /**
      * @var ListenerItem[][][]
      */
-    protected array $listeningConfigs;
+    protected array $listeningConfigs = [];
 
     protected bool $running = false;
 
@@ -46,6 +46,10 @@ class ConfigListener
         $listenerConfig = $this->listenerConfig;
         while ($this->running) {
             try {
+                if (!$this->listeningConfigs) {
+                    usleep(100_000);
+                    continue;
+                }
                 $request = new ListenerRequest();
                 foreach ($this->listeningConfigs as $list1) {
                     foreach ($list1 as $list2) {
