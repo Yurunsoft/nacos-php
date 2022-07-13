@@ -47,7 +47,6 @@ $config = new ClientConfig([
     'timeout'             => 60000, // Network request timeout time, in milliseconds
     'ssl'                 => false, // Whether to use ssl(https) requests
     'authorizationBearer' => false, // Whether to use the request header Authorization: Bearer {accessToken} to pass Token, older versions of Nacos need to be set to true
-    'listenerTimeout'     => 30000, // The config listener long polling timeout, in milliseconds
 ]);
 // Instantiating the client
 $client = new Client($config);
@@ -62,8 +61,15 @@ $client = new Client($config, $logger);
 #### Config listener
 
 ```php
+use Yurun\Nacos\Provider\Config\ConfigListener
+use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
+
 // Get config listener
-$listener = $client->config->getConfigListener();
+$listenerConfig = new ListenerConfig([
+    'timeout'  => 30000, // The config listener long polling timeout, in milliseconds
+    'savePath' => '', // Config save path, default is empty and not saved to file
+]);
+$listener = $client->config->getConfigListener($listenerConfig);
 
 $dataId = 'dataId';
 $groupId = 'groupId';
@@ -72,7 +78,7 @@ $tenant = '';
 // Add listening item
 $listener->addListener($dataId, $groupId, $tenant);
 // Add listening item with callback
-$listener->addListener($dataId, $groupId, $tenant, function (\Yurun\Nacos\Provider\Config\ConfigListener $listener, string $dataId, string $group, string $tenant) {
+$listener->addListener($dataId, $groupId, $tenant, function (\ConfigListener $listener, string $dataId, string $group, string $tenant) {
     // $listener->stop();
 });
 

@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Yurun\Nacos\Provider\Config;
 
 use Psr\Log\LogLevel;
+use Yurun\Nacos\Client;
+use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 use Yurun\Nacos\Provider\Config\Model\ListenerItem;
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
 
 class ConfigListener
 {
-    protected ConfigProvider $configProvider;
+    protected Client $client;
+
+    protected ListenerConfig $listenerConfig;
 
     /**
      * @var ListenerItem[][][]
@@ -29,14 +33,17 @@ class ConfigListener
      */
     protected array $callbacks = [];
 
-    public function __construct(ConfigProvider $configProvider)
+    public function __construct(Client $client, ListenerConfig $listenerConfig)
     {
-        $this->configProvider = $configProvider;
+        $this->client = $client;
+        $this->listenerConfig = $listenerConfig;
     }
 
     public function start(): void
     {
         $this->running = true;
+        $configProvider = $this->client->config;
+        $listenerConfig = $this->listenerConfig;
         while ($this->running) {
             try {
                 $request = new ListenerRequest();
@@ -47,15 +54,28 @@ class ConfigListener
                         }
                     }
                 }
-                $result = $this->configProvider->listen($request, $this->configProvider->getClient()->getConfig()->getListenerTimeout());
+                $result = $configProvider->listen($request, $this->listenerConfig->getTimeout());
                 foreach ($result as $item) {
                     if ($item->getChanged()) {
                         $dataId = $item->getDataId();
                         $group = $item->getGroup();
                         $tenant = $item->getTenant();
                         if (isset($this->listeningConfigs[$dataId][$group][$tenant])) {
-                            $this->configs[$dataId][$group][$tenant] = $value = $this->configProvider->get($dataId, $group, $tenant);
+                            $this->configs[$dataId][$group][$tenant] = $value = $configProvider->get($dataId, $group, $tenant);
                             $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
+                            $savePath = $listenerConfig->getSavePath();
+                            if ('' !== $savePath) {
+                                $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
+                                if ('' !== $tenant) {
+                                    $fileName = $tenant . '/' . $fileName;
+                                }
+                                $fileName = $savePath . '/' . $fileName;
+                                if (!is_dir($fileName)) {
+                                    mkdir($fileName, 0777, true);
+                                }
+                                $fileName .= '/' . $dataId;
+                                file_put_contents($fileName, $value);
+                            }
                         }
                         if (isset($this->callbacks[$dataId][$group][$tenant])) {
                             $this->callbacks[$dataId][$group][$tenant]($this, $dataId, $group, $tenant);
@@ -63,7 +83,7 @@ class ConfigListener
                     }
                 }
             } catch (\Throwable $th) {
-                $this->configProvider->getClient()->getLogger()->logOrThrow(LogLevel::ERROR, sprintf('Nacos listen failed: %s', $th->getMessage()), [], $th);
+                $this->client->getLogger()->logOrThrow(LogLevel::ERROR, sprintf('Nacos listen failed: %s', $th->getMessage()), [], $th);
             }
         }
     }
@@ -75,7 +95,7 @@ class ConfigListener
 
     public function addListener(string $dataId, string $group, string $tenant = '', ?callable $callback = null): void
     {
-        $this->configs[$dataId][$group][$tenant] = $value = $this->configProvider->get($dataId, $group, $tenant);
+        $this->configs[$dataId][$group][$tenant] = $value = $this->client->config->get($dataId, $group, $tenant);
         $this->listeningConfigs[$dataId][$group][$tenant] = new ListenerItem($dataId, $group, md5($value), $tenant);
         if ($callback) {
             $this->callbacks[$dataId][$group][$tenant] = $callback;

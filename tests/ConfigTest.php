@@ -6,11 +6,14 @@ namespace Yurun\Nacos\Test;
 
 use Swoole\Coroutine;
 use Swoole\Coroutine\Channel;
+
 use function Swoole\Coroutine\run;
+
 use Yurun\Nacos\Exception\NacosApiException;
 use Yurun\Nacos\Provider\Config\ConfigListener;
 use Yurun\Nacos\Provider\Config\ConfigProvider;
 use Yurun\Nacos\Provider\Config\Model\HistoryItem;
+use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\StatusCode;
 
@@ -138,7 +141,9 @@ class ConfigTest extends BaseTest
                 $configProvider->set(self::DATA_ID, self::GROUP_ID, (string) $num);
                 usleep(100000); // If v1.3.x does not wait for set, it will not get the value
                 $content = (string) ($num + 1);
-                $listener = $configProvider->getConfigListener();
+                $listenerConfig = new ListenerConfig();
+                $listenerConfig->setSavePath(\dirname(__DIR__) . '/tmp-config');
+                $listener = $configProvider->getConfigListener($listenerConfig);
                 $channel = new Channel();
                 $listener->addListener(self::DATA_ID, self::GROUP_ID, '', function (ConfigListener $listener, string $dataId, string $group, string $tenant) use ($channel) {
                     $listener->stop();
@@ -151,6 +156,9 @@ class ConfigTest extends BaseTest
                 $listener->start();
                 $value = $channel->pop(5);
                 $this->assertEquals($content, $value);
+                $fileName = \dirname(__DIR__) . '/tmp-config/' . self::GROUP_ID . '/' . self::DATA_ID;
+                $this->assertTrue(is_file($fileName));
+                $this->assertEquals($content, file_get_contents($fileName));
             } catch (\Throwable $exception) {
             }
         });

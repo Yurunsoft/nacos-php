@@ -47,7 +47,6 @@ $config = new ClientConfig([
     'timeout'             => 60000, // 网络请求超时时间，单位：毫秒
     'ssl'                 => false, // 是否使用 ssl(https) 请求
     'authorizationBearer' => false, // 是否使用请求头 Authorization: Bearer {accessToken} 方式传递 Token，旧版本 Nacos 需要设为 true
-    'listenerTimeout'     => 30000, // 配置监听器长轮询超时时间，单位：毫秒
 ]);
 // 实例化客户端
 $client = new Client($config);
@@ -101,8 +100,15 @@ $client->config->delete('dataId', 'group', 'value');
 ##### 配置监听器
 
 ```php
+use Yurun\Nacos\Provider\Config\ConfigListener
+use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
+
 // 获取监听器
-$listener = $client->config->getConfigListener();
+$listenerConfig = new ListenerConfig([
+    'timeout'  => 30000, // 配置监听器长轮询超时时间，单位：毫秒
+    'savePath' => '', // 配置保存路径，默认为空不保存到文件
+]);
+$listener = $client->config->getConfigListener($listenerConfig);
 
 $dataId = 'dataId';
 $groupId = 'groupId';
@@ -111,7 +117,7 @@ $tenant = '';
 // 增加监听项
 $listener->addListener($dataId, $groupId, $tenant);
 // 带回调监听配置
-$listener->addListener($dataId, $groupId, $tenant, function (\Yurun\Nacos\Provider\Config\ConfigListener $listener, string $dataId, string $group, string $tenant) {
+$listener->addListener($dataId, $groupId, $tenant, function (ConfigListener $listener, string $dataId, string $group, string $tenant) {
     // $listener->stop();
 });
 

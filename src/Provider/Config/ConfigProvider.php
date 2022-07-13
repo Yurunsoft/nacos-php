@@ -7,6 +7,7 @@ namespace Yurun\Nacos\Provider\Config;
 use Yurun\Nacos\Provider\BaseProvider;
 use Yurun\Nacos\Provider\Config\Model\HistoryListResponse;
 use Yurun\Nacos\Provider\Config\Model\HistoryResponse;
+use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
 use Yurun\Nacos\Provider\Config\Model\ListenerResponseItem;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestMethod;
@@ -90,8 +91,8 @@ class ConfigProvider extends BaseProvider
         ], RequestMethod::GET, [], HistoryResponse::class);
     }
 
-    public function getConfigListener(): ConfigListener
+    public function getConfigListener(ListenerConfig $listenerConfig): ConfigListener
     {
-        return $this->configListener ??= new ConfigListener($this);
+        return $this->configListener ??= new ConfigListener($this->getClient(), $listenerConfig);
     }
 }
