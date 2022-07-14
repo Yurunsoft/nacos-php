@@ -83,6 +83,24 @@ $operator = $client->operator;
 $value = $client->config->get('dataId', 'group');
 ```
 
+#### 获取处理后的配置
+
+> 支持 json、xml、yaml（需要安装 yaml 扩展）
+
+```php
+$client->config->set('dataId', 'group', json_encode(['id' => 19260817]), 'json');
+$value = $client->config->getParsedConfig('dataId', 'group', '', $type);
+
+// 输出：
+// array(1) {
+//   ["id"]=>
+//   int(19260817)
+// }
+var_dump($value);
+
+var_dump($type); // json
+```
+
 #### 写入配置
 
 ```php

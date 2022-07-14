@@ -23,6 +23,22 @@ class ConfigTest extends BaseTest
 
     public const GROUP_ID = 'ConfigTest';
 
+    public const JSON_DATA_ID = 'json';
+
+    public const JSON_VALUE = '{"id": 19260817}';
+
+    public const XML_DATA_ID = 'xml';
+
+    public const XML_VALUE = <<<XML
+    <?xml version="1.0"?>
+    <xml><id>19260817</id></xml>
+
+    XML;
+
+    public const YAML_DATA_ID = 'yaml';
+
+    public const YAML_VALUE = 'foo: bar';
+
     protected function getProvider(): ConfigProvider
     {
         return $this->getClient()->config;
@@ -31,6 +47,11 @@ class ConfigTest extends BaseTest
     public function testSet(): void
     {
         $this->assertTrue($this->getProvider()->set(self::DATA_ID, 'ConfigTest', 'value'));
+        $this->assertTrue($this->getProvider()->set(self::JSON_DATA_ID, 'ConfigTest', self::JSON_VALUE, '', 'json'));
+        $this->assertTrue($this->getProvider()->set(self::XML_DATA_ID, 'ConfigTest', self::XML_VALUE, '', 'xml'));
+        if (\function_exists('yaml_parse')) {
+            $this->assertTrue($this->getProvider()->set(self::YAML_DATA_ID, 'ConfigTest', self::YAML_VALUE, '', 'yaml'));
+        }
         usleep(100000); // If v1.3.x does not wait for set, it will not get the value
     }
 
@@ -39,7 +60,28 @@ class ConfigTest extends BaseTest
      */
     public function testGet(): void
     {
-        $this->assertEquals('value', $this->getProvider()->get(self::DATA_ID, 'ConfigTest'));
+        $this->assertEquals('value', $this->getProvider()->get(self::DATA_ID, 'ConfigTest', '', $type));
+        $this->assertEquals('text', $type);
+
+        $this->assertEquals(json_decode(self::JSON_VALUE, true), $this->getProvider()->getParsedConfig(self::JSON_DATA_ID, 'ConfigTest', '', $type));
+        $this->assertEquals('json', $type);
+
+        /** @var \SimpleXMLElement $xml */
+        $xml = $this->getProvider()->getParsedConfig(self::XML_DATA_ID, 'ConfigTest', '', $type);
+        $this->assertEquals(self::XML_VALUE, $xml->saveXML());
+        $this->assertEquals('xml', $type);
+    }
+
+    /**
+     * @depends testSet
+     */
+    public function testGetYaml(): void
+    {
+        if (!\function_exists('yaml_parse')) {
+            $this->markTestSkipped('no yaml');
+        }
+        $this->assertEquals(yaml_parse(self::YAML_VALUE), $this->getProvider()->getParsedConfig(self::YAML_DATA_ID, 'ConfigTest', '', $type));
+        $this->assertEquals('yaml', $type);
     }
 
     /**

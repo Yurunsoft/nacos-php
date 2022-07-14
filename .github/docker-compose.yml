@@ -17,7 +17,6 @@ services:
             start_period: 5s
     php7.4:
         container_name: "php7.4"
-        image: phpswoole/swoole:4.8.10-php7.4
         depends_on:
             - nacos
         environment:
@@ -25,9 +24,13 @@ services:
         volumes:
             - "${GITHUB_WORKSPACE}:/nacos-php:rw"
         working_dir: /nacos-php
+        build:
+            context: .
+            dockerfile: swoole.dockerfile
+            args:
+                SWOOLE_DOCKER_VERSION: 4.8.10-php7.4
     php8.0:
         container_name: "php8.0"
-        image: phpswoole/swoole:4.8.10-php8.0
         depends_on:
             - nacos
         environment:
@@ -35,9 +38,13 @@ services:
         volumes:
             - "${GITHUB_WORKSPACE}:/nacos-php:rw"
         working_dir: /nacos-php
+        build:
+            context: .
+            dockerfile: swoole.dockerfile
+            args:
+                SWOOLE_DOCKER_VERSION: 4.8.10-php8.0
     php8.1:
         container_name: "php8.1"
-        image: phpswoole/swoole:4.8.10-php8.1
         depends_on:
             - nacos
         environment:
@@ -45,3 +52,8 @@ services:
         volumes:
             - "${GITHUB_WORKSPACE}:/nacos-php:rw"
         working_dir: /nacos-php
+        build:
+            context: .
+            dockerfile: swoole.dockerfile
+            args:
+                SWOOLE_DOCKER_VERSION: 4.8.10-php8.1

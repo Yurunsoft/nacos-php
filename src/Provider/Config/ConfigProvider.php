@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yurun\Nacos\Provider\Config;
 
+use function yaml_parse;
+
 use Yurun\Nacos\Provider\BaseProvider;
 use Yurun\Nacos\Provider\Config\Model\HistoryListResponse;
 use Yurun\Nacos\Provider\Config\Model\HistoryResponse;
@@ -18,13 +20,44 @@ class ConfigProvider extends BaseProvider
 
     public const CONFIG_HISTORY_API_APTH = 'nacos/v1/cs/history';
 
-    public function get(string $dataId, string $group, string $tenant = ''): string
+    public function get(string $dataId, string $group, string $tenant = '', ?string &$type = null): string
     {
-        return $this->client->request(self::CONFIG_API_APTH, [
+        $response = $this->client->request(self::CONFIG_API_APTH, [
             'dataId' => $dataId,
             'group'  => $group,
             'tenant' => $tenant,
-        ])->body();
+        ]);
+        $type = $response->getHeaderLine('Config-Type');
+
+        return $response->body();
+    }
+
+    /**
+     * @return array|SimpleXMLElement|mixed
+     */
+    public function getParsedConfig(string $dataId, string $group, string $tenant = '', ?string &$type = null)
+    {
+        $value = $this->get($dataId, $group, $tenant, $type);
+
+        return $this->parseConfig($value, $type);
+    }
+
+    /**
+     * @return array|SimpleXMLElement|mixed
+     */
+    public function parseConfig(string $value, string $type)
+    {
+        switch ($type) {
+            case 'json':
+                return json_decode($value, true, 512, \JSON_THROW_ON_ERROR);
+            case 'xml':
+                return simplexml_load_string($value, 'SimpleXMLElement', \LIBXML_NOCDATA);
+            case 'yml':
+            case 'yaml':
+                return yaml_parse($value);
+            default:
+                return $value;
+        }
     }
 
     public function set(string $dataId, string $group, string $content, string $tenant = '', string $type = ''): bool

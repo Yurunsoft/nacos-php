@@ -112,6 +112,24 @@ $operator = $client->operator;
 $value = $client->config->get('dataId', 'group');
 ```
 
+#### Get parsed config
+
+> Support json, xml, yaml (Required: yaml extension)
+
+```php
+$client->config->set('dataId', 'group', json_encode(['id' => 19260817]), 'json');
+$value = $client->config->getParsedConfig('dataId', 'group', '', $type);
+
+// output：
+// array(1) {
+//   ["id"]=>
+//   int(19260817)
+// }
+var_dump($value);
+
+var_dump($type); // json
+```
+
 #### Set config
 
 ```php
