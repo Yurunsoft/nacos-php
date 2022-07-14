@@ -58,25 +58,34 @@ class ConfigTest extends BaseTest
     /**
      * @depends testSet
      */
-    public function testGet(): void
+    public function testGet(): bool
     {
         $this->assertEquals('value', $this->getProvider()->get(self::DATA_ID, 'ConfigTest', '', $type));
-        $this->assertEquals('text', $type);
+        if ('' !== $type) {
+            $this->assertEquals('text', $type);
 
-        $this->assertEquals(json_decode(self::JSON_VALUE, true), $this->getProvider()->getParsedConfig(self::JSON_DATA_ID, 'ConfigTest', '', $type));
-        $this->assertEquals('json', $type);
+            $this->assertEquals(json_decode(self::JSON_VALUE, true), $this->getProvider()->getParsedConfig(self::JSON_DATA_ID, 'ConfigTest', '', $type));
+            $this->assertEquals('json', $type);
 
-        /** @var \SimpleXMLElement $xml */
-        $xml = $this->getProvider()->getParsedConfig(self::XML_DATA_ID, 'ConfigTest', '', $type);
-        $this->assertEquals(self::XML_VALUE, $xml->saveXML());
-        $this->assertEquals('xml', $type);
+            /** @var \SimpleXMLElement $xml */
+            $xml = $this->getProvider()->getParsedConfig(self::XML_DATA_ID, 'ConfigTest', '', $type);
+            $this->assertEquals(self::XML_VALUE, $xml->saveXML());
+            $this->assertEquals('xml', $type);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     * @depends testSet
+     * @depends testGet
      */
-    public function testGetYaml(): void
+    public function testGetYaml(bool $supportType): void
     {
+        if (!$supportType) {
+            $this->markTestSkipped('not support type');
+        }
         if (!\function_exists('yaml_parse')) {
             $this->markTestSkipped('no yaml');
         }

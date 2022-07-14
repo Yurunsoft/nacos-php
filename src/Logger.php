@@ -150,7 +150,7 @@ class Logger
         $this->logger->log($level, $message, $context);
     }
 
-    public function logOrThrow($level, $message, array $context = [], \Throwable $th): void
+    public function logOrThrow($level, $message, array $context, \Throwable $th): void
     {
         if (!$this->logger) {
             throw $th;

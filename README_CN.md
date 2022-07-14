@@ -86,6 +86,7 @@ $value = $client->config->get('dataId', 'group');
 #### 获取处理后的配置
 
 > 支持 json、xml、yaml（需要安装 yaml 扩展）
+> Nacos >= 1.4
 
 ```php
 $client->config->set('dataId', 'group', json_encode(['id' => 19260817]), 'json');

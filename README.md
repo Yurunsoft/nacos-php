@@ -115,6 +115,7 @@ $value = $client->config->get('dataId', 'group');
 #### Get parsed config
 
 > Support json, xml, yaml (Required: yaml extension)
+> Nacos >= 1.4
 
 ```php
 $client->config->set('dataId', 'group', json_encode(['id' => 19260817]), 'json');
