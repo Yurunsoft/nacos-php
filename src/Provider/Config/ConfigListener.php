@@ -40,6 +40,41 @@ class ConfigListener
         $this->listenerConfig = $listenerConfig;
     }
 
+    /**
+     * Pull all configs.
+     */
+    public function pull(): void
+    {
+        $listenerConfig = $this->listenerConfig;
+        foreach ($this->listeningConfigs as $list1) {
+            foreach ($list1 as $list2) {
+                foreach ($list2 as $item) {
+                    $dataId = $item->getDataId();
+                    $group = $item->getGroup();
+                    $tenant = $item->getTenant();
+                    try {
+                        $this->configs[$dataId][$group][$tenant] = $value = $this->client->config->get($dataId, $group, $tenant);
+                        $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
+                        $savePath = $listenerConfig->getSavePath();
+                        if ('' !== $savePath) {
+                            $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
+                            if ('' !== $tenant) {
+                                $fileName = $tenant . '/' . $fileName;
+                            }
+                            $fileName = $savePath . '/' . $fileName;
+                            if (!is_dir($fileName)) {
+                                mkdir($fileName, 0777, true);
+                            }
+                            $fileName .= '/' . $dataId;
+                            file_put_contents($fileName, $value);
+                        }
+                    } catch (NacosApiException $e) {
+                    }
+                }
+            }
+        }
+    }
+
     public function start(): void
     {
         $this->running = true;
@@ -101,13 +136,8 @@ class ConfigListener
 
     public function addListener(string $dataId, string $group, string $tenant = '', ?callable $callback = null): void
     {
-        try {
-            $value = $this->client->config->get($dataId, $group, $tenant);
-        } catch (NacosApiException $e) {
-            $value = '';
-        }
-        $this->configs[$dataId][$group][$tenant] = $value;
-        $this->listeningConfigs[$dataId][$group][$tenant] = new ListenerItem($dataId, $group, '' === $value ? '' : md5($value), $tenant);
+        $this->configs[$dataId][$group][$tenant] = '';
+        $this->listeningConfigs[$dataId][$group][$tenant] = new ListenerItem($dataId, $group, '', $tenant);
         if ($callback) {
             $this->callbacks[$dataId][$group][$tenant] = $callback;
         }
@@ -123,7 +153,7 @@ class ConfigListener
         }
     }
 
-    public function get(string $dataId, string $group, string $tenant): string
+    public function get(string $dataId, string $group, string $tenant = ''): string
     {
         return $this->configs[$dataId][$group][$tenant] ?? '';
     }

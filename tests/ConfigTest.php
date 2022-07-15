@@ -200,6 +200,8 @@ class ConfigTest extends BaseTest
                     $listener->stop();
                     $channel->push($listener->get($dataId, $group, $tenant));
                 });
+                $listener->pull();
+                $this->assertEquals((string) $num, $listener->get(self::DATA_ID, self::GROUP_ID));
                 Coroutine::create(function () use ($configProvider, $content) {
                     usleep(1);
                     $configProvider->set(self::DATA_ID, self::GROUP_ID, $content);

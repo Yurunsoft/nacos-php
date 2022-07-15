@@ -141,6 +141,9 @@ $listener->addListener($dataId, $groupId, $tenant, function (ConfigListener $lis
     // $listener->stop();
 });
 
+// 拉取所有监听的配置（非必须）
+$listener->pull();
+
 // 开始监听，在停止之前不会继续执行下面的语句
 $listener->start();
 

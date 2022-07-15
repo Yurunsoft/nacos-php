@@ -83,6 +83,9 @@ $listener->addListener($dataId, $groupId, $tenant, function (\ConfigListener $li
     // $listener->stop();
 });
 
+// Pull configuration for all listeners (not required)
+$listener->pull();
+
 // Start listening and do not continue the following statements until you stop
 $listener->start();
 
