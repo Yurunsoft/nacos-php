@@ -120,14 +120,12 @@ class Client
         $response = $this->httpRequest->timeout($config->getTimeout())->headers($headers)->send($url, $params, $method);
         // request failed
         if (!$response->success) {
-            $this->getLogger()->error(sprintf('Request failed [%d] %s. Request method[%s], url[%s], header:[%s], params:[%s]', $response->errno(), $response->error(), $method, $url, json_encode($headers, \JSON_PRETTY_PRINT), json_encode($params, \JSON_PRETTY_PRINT)));
-            throw new NacosApiException(sprintf('Request failed [%d] %s', $response->errno(), $response->error()));
+            throw new NacosApiException(sprintf('Request failed [%d] %s. Request method[%s], url[%s], header:[%s], params:[%s]', $response->errno(), $response->error(), $method, $url, json_encode($headers, \JSON_PRETTY_PRINT), json_encode($params, \JSON_PRETTY_PRINT)));
         }
 
         // Nacos error
         if (StatusCode::OK !== $response->getStatusCode()) {
             $body = $response->body();
-            $this->getLogger()->error(sprintf('Nacos error: [%d] %s. Request method[%s], url[%s], header:[%s], params:[%s]', $response->getStatusCode(), $body, $method, $url, json_encode($headers, \JSON_PRETTY_PRINT), json_encode($params, \JSON_PRETTY_PRINT)));
 
             // json
             $result = json_decode($body, true);
