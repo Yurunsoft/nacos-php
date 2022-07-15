@@ -90,7 +90,12 @@ $listener->pull();
 $listener->start();
 
 // To get the configuration cache from the listener, you need to call it in another coroutine
-$listener->get($dataId);
+$value = $listener->get($dataId, $groupId, $tenant, $type);
+var_dump($type); // Data type
+
+// To get the configuration cache (Arrays or objects after parsing) from the listener, you need to call it in another coroutine
+$value = $listener->getParsed($dataId, $groupId, $tenant, $type);
+var_dump($type); // Data type
 ```
 
 #### Manual Listening Configuration

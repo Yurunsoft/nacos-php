@@ -24,15 +24,7 @@ class ConfigListener
 
     protected bool $running = false;
 
-    /**
-     * @var string[][][]
-     */
     protected array $configs = [];
-
-    /**
-     * @var callable[][][]
-     */
-    protected array $callbacks = [];
 
     public function __construct(Client $client, ListenerConfig $listenerConfig)
     {
@@ -53,7 +45,9 @@ class ConfigListener
                     $group = $item->getGroup();
                     $tenant = $item->getTenant();
                     try {
-                        $this->configs[$dataId][$group][$tenant] = $value = $this->client->config->get($dataId, $group, $tenant);
+                        $configItem = &$this->configs[$dataId][$group][$tenant];
+                        $configItem['value'] = $value = $this->client->config->get($dataId, $group, $tenant, $type);
+                        $configItem['type'] = $type;
                         $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
                         $savePath = $listenerConfig->getSavePath();
                         if ('' !== $savePath) {
@@ -101,7 +95,8 @@ class ConfigListener
                         $group = $item->getGroup();
                         $tenant = $item->getTenant();
                         if (isset($this->listeningConfigs[$dataId][$group][$tenant])) {
-                            $this->configs[$dataId][$group][$tenant] = $value = $configProvider->get($dataId, $group, $tenant);
+                            $configItem = &$this->configs[$dataId][$group][$tenant];
+                            $configItem['value'] = $value = $configProvider->get($dataId, $group, $tenant);
                             $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
                             $savePath = $listenerConfig->getSavePath();
                             if ('' !== $savePath) {
@@ -117,8 +112,8 @@ class ConfigListener
                                 file_put_contents($fileName, $value);
                             }
                         }
-                        if (isset($this->callbacks[$dataId][$group][$tenant])) {
-                            $this->callbacks[$dataId][$group][$tenant]($this, $dataId, $group, $tenant);
+                        if (isset($configItem['callback'])) {
+                            $configItem['callback']($this, $dataId, $group, $tenant);
                         }
                     }
                 }
@@ -136,11 +131,12 @@ class ConfigListener
 
     public function addListener(string $dataId, string $group, string $tenant = '', ?callable $callback = null): void
     {
-        $this->configs[$dataId][$group][$tenant] = '';
+        $this->configs[$dataId][$group][$tenant] = [
+            'value'    => '',
+            'type'     => 'text',
+            'callback' => $callback,
+        ];
         $this->listeningConfigs[$dataId][$group][$tenant] = new ListenerItem($dataId, $group, '', $tenant);
-        if ($callback) {
-            $this->callbacks[$dataId][$group][$tenant] = $callback;
-        }
     }
 
     public function removeListener(string $dataId, string $group, string $tenant = ''): void
@@ -148,13 +144,20 @@ class ConfigListener
         if (isset($this->listeningConfigs[$dataId][$group][$tenant])) {
             unset($this->listeningConfigs[$dataId][$group][$tenant]);
         }
-        if (isset($this->callbacks[$dataId][$group][$tenant])) {
-            unset($this->callbacks[$dataId][$group][$tenant]);
-        }
     }
 
-    public function get(string $dataId, string $group, string $tenant = ''): string
+    public function get(string $dataId, string $group, string $tenant = '', ?string &$type = null): string
     {
-        return $this->configs[$dataId][$group][$tenant] ?? '';
+        $type = $this->configs[$dataId][$group][$tenant]['type'] ?? 'text';
+
+        return $this->configs[$dataId][$group][$tenant]['value'] ?? '';
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParsed(string $dataId, string $group, string $tenant = '', ?string &$type = null)
+    {
+        return $this->client->config->parseConfig($this->get($dataId, $group, $tenant, $type), $type);
     }
 }

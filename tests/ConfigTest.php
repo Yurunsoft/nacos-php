@@ -119,7 +119,7 @@ class ConfigTest extends BaseTest
         $exception = null;
         run(function () use (&$exception) {
             try {
-                $content = (string) mt_rand();
+                $content = json_encode(['id' => 1]);
                 Coroutine::create(function () use ($content, &$exception) {
                     try {
                         $client = $this->getNewClient();
@@ -133,11 +133,14 @@ class ConfigTest extends BaseTest
                         $this->assertEquals(self::DATA_ID, $response->getDataId());
                         $this->assertEquals(self::GROUP_ID, $response->getGroup());
                         $this->assertEquals('', $response->getTenant());
-                        $this->assertEquals($content, $config->get(self::DATA_ID, self::GROUP_ID));
+                        $this->assertEquals($content, $config->get(self::DATA_ID, self::GROUP_ID, '', $type));
+                        $this->assertEquals('json', $type);
+                        $this->assertEquals(json_decode($content, true), $config->getParsedConfig(self::DATA_ID, self::GROUP_ID, '', $type));
+                        $this->assertEquals('json', $type);
                     } catch (\Throwable $exception) {
                     }
                 });
-                $this->assertTrue($this->getNewClient()->config->set(self::DATA_ID, self::GROUP_ID, $content));
+                $this->assertTrue($this->getNewClient()->config->set(self::DATA_ID, self::GROUP_ID, $content, '', 'json'));
             } catch (\Throwable $exception) {
             }
         });

@@ -148,7 +148,12 @@ $listener->pull();
 $listener->start();
 
 // 从监听器中获取配置缓存，需要在其它协程中调用
-$listener->get($dataId);
+$value = $listener->get($dataId, $groupId, $tenant, $type);
+var_dump($type); // 数据类型
+
+// 从监听器中获取配置缓存（处理后的数组或对象），需要在其它协程中调用
+$value = $listener->getParsed($dataId, $groupId, $tenant, $type);
+var_dump($type); // 数据类型
 ```
 
 ##### 手动监听配置
