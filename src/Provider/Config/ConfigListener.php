@@ -6,6 +6,7 @@ namespace Yurun\Nacos\Provider\Config;
 
 use Psr\Log\LogLevel;
 use Yurun\Nacos\Client;
+use Yurun\Nacos\Exception\NacosApiException;
 use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 use Yurun\Nacos\Provider\Config\Model\ListenerItem;
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
@@ -99,7 +100,12 @@ class ConfigListener
 
     public function addListener(string $dataId, string $group, string $tenant = '', ?callable $callback = null): void
     {
-        $this->configs[$dataId][$group][$tenant] = $value = $this->client->config->get($dataId, $group, $tenant);
+        try {
+            $value = $this->client->config->get($dataId, $group, $tenant);
+        } catch (NacosApiException $e) {
+            $value = '';
+        }
+        $this->configs[$dataId][$group][$tenant] = $value;
         $this->listeningConfigs[$dataId][$group][$tenant] = new ListenerItem($dataId, $group, md5($value), $tenant);
         if ($callback) {
             $this->callbacks[$dataId][$group][$tenant] = $callback;
