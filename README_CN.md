@@ -125,6 +125,7 @@ use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 // 获取监听器
 $listenerConfig = new ListenerConfig([
     'timeout'  => 30000, // 配置监听器长轮询超时时间，单位：毫秒
+    'failedWaitTime' => 3000, // 失败后等待重试时间，单位：毫秒
     'savePath' => '', // 配置保存路径，默认为空不保存到文件
 ]);
 $listener = $client->config->getConfigListener($listenerConfig);

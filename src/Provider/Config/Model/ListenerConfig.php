@@ -13,6 +13,11 @@ class ListenerConfig extends BaseModel
      */
     protected int $timeout = 30000;
 
+    /**
+     * Waiting time to retry after failure, in milliseconds.
+     */
+    protected int $failedWaitTime = 3000;
+
     protected string $savePath = '';
 
     /**
@@ -29,6 +34,24 @@ class ListenerConfig extends BaseModel
     public function setTimeout(int $timeout): self
     {
         $this->timeout = $timeout;
+
+        return $this;
+    }
+
+    /**
+     * Get Waiting time to retry after failure, in milliseconds.
+     */
+    public function getFailedTimeout(): int
+    {
+        return $this->failedWaitTime;
+    }
+
+    /**
+     * Set Waiting time to retry after failure, in milliseconds.
+     */
+    public function setFailedTimeout(int $failedWaitTime): self
+    {
+        $this->failedWaitTime = $failedWaitTime;
 
         return $this;
     }

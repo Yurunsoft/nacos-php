@@ -89,6 +89,7 @@ class ConfigListener
                 }
             } catch (\Throwable $th) {
                 $this->client->getLogger()->logOrThrow(LogLevel::ERROR, sprintf('Nacos listen failed: %s', $th->getMessage()), [], $th);
+                usleep($listenerConfig->getFailedTimeout() * 1000);
             }
         }
     }
@@ -106,7 +107,7 @@ class ConfigListener
             $value = '';
         }
         $this->configs[$dataId][$group][$tenant] = $value;
-        $this->listeningConfigs[$dataId][$group][$tenant] = new ListenerItem($dataId, $group, md5($value), $tenant);
+        $this->listeningConfigs[$dataId][$group][$tenant] = new ListenerItem($dataId, $group, '' === $value ? '' : md5($value), $tenant);
         if ($callback) {
             $this->callbacks[$dataId][$group][$tenant] = $callback;
         }

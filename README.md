@@ -67,6 +67,7 @@ use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 // Get config listener
 $listenerConfig = new ListenerConfig([
     'timeout'  => 30000, // The config listener long polling timeout, in milliseconds
+    'failedWaitTime' => 3000, // Waiting time to retry after failure, in milliseconds
     'savePath' => '', // Config save path, default is empty and not saved to file
 ]);
 $listener = $client->config->getConfigListener($listenerConfig);
