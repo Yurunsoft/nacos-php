@@ -96,7 +96,8 @@ class ConfigListener
                         $tenant = $item->getTenant();
                         if (isset($this->listeningConfigs[$dataId][$group][$tenant])) {
                             $configItem = &$this->configs[$dataId][$group][$tenant];
-                            $configItem['value'] = $value = $configProvider->get($dataId, $group, $tenant);
+                            $configItem['value'] = $value = $configProvider->get($dataId, $group, $tenant, $type);
+                            $configItem['type'] = $type;
                             $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
                             $savePath = $listenerConfig->getSavePath();
                             if ('' !== $savePath) {
@@ -154,7 +155,7 @@ class ConfigListener
     }
 
     /**
-     * @return mixed
+     * @return array|SimpleXMLElement|mixed
      */
     public function getParsed(string $dataId, string $group, string $tenant = '', ?string &$type = null)
     {

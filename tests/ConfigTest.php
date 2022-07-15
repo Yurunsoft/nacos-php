@@ -135,6 +135,7 @@ class ConfigTest extends BaseTest
                         $this->assertEquals('', $response->getTenant());
                         $this->assertEquals($content, $config->get(self::DATA_ID, self::GROUP_ID, '', $type));
                         $this->assertEquals('json', $type);
+                        $type = null;
                         $this->assertEquals(json_decode($content, true), $config->getParsedConfig(self::DATA_ID, self::GROUP_ID, '', $type));
                         $this->assertEquals('json', $type);
                     } catch (\Throwable $exception) {
