@@ -111,21 +111,23 @@ class ConfigTest extends BaseTest
     }
 
     /**
-     * @depends testSet
+     * @depends testGet
      */
-    public function testListener(): void
+    public function testListener(bool $supportType): void
     {
         $this->skipNoSwoole();
         $exception = null;
-        run(function () use (&$exception) {
+        run(function () use (&$exception, $supportType) {
             try {
+                $channel = new Channel();
                 $content = json_encode(['id' => 1]);
-                Coroutine::create(function () use ($content, &$exception) {
+                Coroutine::create(function () use ($content, $channel, $supportType, &$exception) {
                     try {
                         $client = $this->getNewClient();
                         $config = $client->config;
                         $request = new ListenerRequest();
                         $request->addListener(self::DATA_ID, self::GROUP_ID);
+                        $channel->push(1);
                         $items = $config->listen($request);
                         $this->assertCount(1, $items);
                         $response = $items[0];
@@ -134,13 +136,16 @@ class ConfigTest extends BaseTest
                         $this->assertEquals(self::GROUP_ID, $response->getGroup());
                         $this->assertEquals('', $response->getTenant());
                         $this->assertEquals($content, $config->get(self::DATA_ID, self::GROUP_ID, '', $type));
-                        $this->assertEquals('json', $type);
-                        $type = null;
-                        $this->assertEquals(json_decode($content, true), $config->getParsedConfig(self::DATA_ID, self::GROUP_ID, '', $type));
-                        $this->assertEquals('json', $type);
+                        if ($supportType) {
+                            $this->assertEquals('json', $type);
+                            $type = null;
+                            $this->assertEquals(json_decode($content, true), $config->getParsedConfig(self::DATA_ID, self::GROUP_ID, '', $type));
+                            $this->assertEquals('json', $type);
+                        }
                     } catch (\Throwable $exception) {
                     }
                 });
+                $channel->pop(5);
                 $this->assertTrue($this->getNewClient()->config->set(self::DATA_ID, self::GROUP_ID, $content, '', 'json'));
             } catch (\Throwable $exception) {
             }
