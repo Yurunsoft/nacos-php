@@ -72,56 +72,61 @@ class ConfigListener
     public function start(): void
     {
         $this->running = true;
-        $configProvider = $this->client->config;
-        $listenerConfig = $this->listenerConfig;
         while ($this->running) {
-            try {
-                if (!$this->listeningConfigs) {
-                    usleep(100_000);
-                    continue;
-                }
-                $request = new ListenerRequest();
-                foreach ($this->listeningConfigs as $list1) {
-                    foreach ($list1 as $list2) {
-                        foreach ($list2 as $item) {
-                            $request->addListener($item->getDataId(), $item->getGroup(), $item->getContentMD5(), $item->getTenant());
-                        }
-                    }
-                }
-                $result = $configProvider->listen($request, $this->listenerConfig->getTimeout());
-                foreach ($result as $item) {
-                    if ($item->getChanged()) {
-                        $dataId = $item->getDataId();
-                        $group = $item->getGroup();
-                        $tenant = $item->getTenant();
-                        if (isset($this->listeningConfigs[$dataId][$group][$tenant])) {
-                            $configItem = &$this->configs[$dataId][$group][$tenant];
-                            $configItem['value'] = $value = $configProvider->get($dataId, $group, $tenant, $type);
-                            $configItem['type'] = $type;
-                            $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
-                            $savePath = $listenerConfig->getSavePath();
-                            if ('' !== $savePath) {
-                                $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
-                                if ('' !== $tenant) {
-                                    $fileName = $tenant . '/' . $fileName;
-                                }
-                                $fileName = $savePath . '/' . $fileName;
-                                if (!is_dir($fileName)) {
-                                    mkdir($fileName, 0777, true);
-                                }
-                                $fileName .= '/' . $dataId;
-                                file_put_contents($fileName, $value);
-                            }
-                        }
-                        if (isset($configItem['callback'])) {
-                            $configItem['callback']($this, $dataId, $group, $tenant);
-                        }
-                    }
-                }
-            } catch (\Throwable $th) {
-                $this->client->getLogger()->logOrThrow(LogLevel::ERROR, sprintf('Nacos listen failed: %s', $th->getMessage()), [], $th);
-                usleep($listenerConfig->getFailedTimeout() * 1000);
+            if (!$this->listeningConfigs) {
+                usleep(100_000);
+                continue;
             }
+            $this->polling();
+        }
+    }
+
+    public function polling(?int $timeout = null): void
+    {
+        try {
+            $configProvider = $this->client->config;
+            $listenerConfig = $this->listenerConfig;
+            $request = new ListenerRequest();
+            foreach ($this->listeningConfigs as $list1) {
+                foreach ($list1 as $list2) {
+                    foreach ($list2 as $item) {
+                        $request->addListener($item->getDataId(), $item->getGroup(), $item->getContentMD5(), $item->getTenant());
+                    }
+                }
+            }
+            $result = $configProvider->listen($request, $timeout ?? $listenerConfig->getTimeout());
+            foreach ($result as $item) {
+                if ($item->getChanged()) {
+                    $dataId = $item->getDataId();
+                    $group = $item->getGroup();
+                    $tenant = $item->getTenant();
+                    if (isset($this->listeningConfigs[$dataId][$group][$tenant])) {
+                        $configItem = &$this->configs[$dataId][$group][$tenant];
+                        $configItem['value'] = $value = $configProvider->get($dataId, $group, $tenant, $type);
+                        $configItem['type'] = $type;
+                        $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
+                        $savePath = $listenerConfig->getSavePath();
+                        if ('' !== $savePath) {
+                            $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
+                            if ('' !== $tenant) {
+                                $fileName = $tenant . '/' . $fileName;
+                            }
+                            $fileName = $savePath . '/' . $fileName;
+                            if (!is_dir($fileName)) {
+                                mkdir($fileName, 0777, true);
+                            }
+                            $fileName .= '/' . $dataId;
+                            file_put_contents($fileName, $value);
+                        }
+                    }
+                    if (isset($configItem['callback'])) {
+                        $configItem['callback']($this, $dataId, $group, $tenant);
+                    }
+                }
+            }
+        } catch (\Throwable $th) {
+            $this->client->getLogger()->logOrThrow(LogLevel::ERROR, sprintf('Nacos listen failed: %s', $th), [], $th);
+            usleep($listenerConfig->getFailedTimeout() * 1000);
         }
     }
 

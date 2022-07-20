@@ -85,7 +85,13 @@ class ConfigProvider extends BaseProvider
      */
     public function listen(ListenerRequest $request, int $longPullingTimeout = 30000): array
     {
-        $response = $this->client->request('nacos/v1/cs/configs/listener', $request->getRequestBody(), RequestMethod::POST, ['Long-Pulling-Timeout' => (string) $longPullingTimeout]);
+        $headers = [];
+        if (0 === $longPullingTimeout) {
+            $headers['Long-Pulling-Timeout-No-Hangup'] = 'true';
+        } else {
+            $headers['Long-Pulling-Timeout'] = (string) $longPullingTimeout;
+        }
+        $response = $this->client->request('nacos/v1/cs/configs/listener', $request->getRequestBody(), RequestMethod::POST, $headers);
         $result = [];
         foreach (explode('%01', trim($response->body())) as $item) {
             if ('' === $item) {

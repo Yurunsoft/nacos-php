@@ -124,7 +124,7 @@ use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 
 // 获取监听器
 $listenerConfig = new ListenerConfig([
-    'timeout'  => 30000, // 配置监听器长轮询超时时间，单位：毫秒
+    'timeout'  => 30000, // 配置监听器长轮询超时时间，单位：毫秒。值为 0 时立即返回结果。
     'failedWaitTime' => 3000, // 失败后等待重试时间，单位：毫秒
     'savePath' => '', // 配置保存路径，默认为空不保存到文件
 ]);
@@ -144,7 +144,12 @@ $listener->addListener($dataId, $groupId, $tenant, function (ConfigListener $lis
 // 拉取所有监听的配置（非必须）
 $listener->pull();
 
-// 开始监听，在停止之前不会继续执行下面的语句
+// 手动执行一次轮询
+$listener->polling(); // ListenerConfig 中的 timeout 作为超时时间
+$listener->polling(30000); // 指定超时时间
+$listener->polling(0); // 立即返回结果
+
+// 开始轮询监听，在停止之前不会继续执行下面的语句
 $listener->start();
 
 // 从监听器中获取配置缓存，需要在其它协程中调用

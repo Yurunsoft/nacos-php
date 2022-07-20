@@ -66,7 +66,7 @@ use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 
 // Get config listener
 $listenerConfig = new ListenerConfig([
-    'timeout'  => 30000, // The config listener long polling timeout, in milliseconds
+    'timeout'  => 30000, // The config listener long polling timeout, in milliseconds. The result is returned immediately when the value is 0.
     'failedWaitTime' => 3000, // Waiting time to retry after failure, in milliseconds
     'savePath' => '', // Config save path, default is empty and not saved to file
 ]);
@@ -86,7 +86,12 @@ $listener->addListener($dataId, $groupId, $tenant, function (\ConfigListener $li
 // Pull configuration for all listeners (not required)
 $listener->pull();
 
-// Start listening and do not continue the following statements until you stop
+// Manually perform a poll
+$listener->polling(); // The timeout in the ListenerConfig is used as the timeout time.
+$listener->polling(30000); // Specify the timeout period
+$listener->polling(0); // Return results immediately
+
+// Start the polling listener and do not continue with the following statements until you stop
 $listener->start();
 
 // To get the configuration cache from the listener, you need to call it in another coroutine
