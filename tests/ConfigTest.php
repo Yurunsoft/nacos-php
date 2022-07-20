@@ -128,6 +128,7 @@ class ConfigTest extends BaseTest
                         $request = new ListenerRequest();
                         $request->addListener(self::DATA_ID, self::GROUP_ID);
                         $channel->push(1);
+                        $channel->pop(5);
                         $items = $config->listen($request);
                         $this->assertCount(1, $items);
                         $response = $items[0];
@@ -147,6 +148,7 @@ class ConfigTest extends BaseTest
                 });
                 $channel->pop(5);
                 $this->assertTrue($this->getNewClient()->config->set(self::DATA_ID, self::GROUP_ID, $content, '', 'json'));
+                $channel->push(1);
             } catch (\Throwable $exception) {
             }
         });
