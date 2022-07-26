@@ -211,7 +211,13 @@ class ConfigTest extends BaseTest
                     $listener->stop();
                     $channel->push($listener->get($dataId, $group, $tenant));
                 });
+                $fileName = \dirname(__DIR__) . '/tmp-config/' . self::GROUP_ID . '/notfound';
+                file_put_contents($fileName, __FILE__);
+                $listener->addListener('notfound', self::GROUP_ID, '', function () {
+                    $this->assertTrue(false);
+                });
                 $listener->pull();
+                $this->assertEquals(__FILE__, $listener->get('notfound', self::GROUP_ID));
                 $this->assertEquals((string) $num, $listener->get(self::DATA_ID, self::GROUP_ID));
                 Coroutine::create(function () use ($configProvider, $content) {
                     usleep(1);

@@ -44,25 +44,31 @@ class ConfigListener
                     $dataId = $item->getDataId();
                     $group = $item->getGroup();
                     $tenant = $item->getTenant();
+                    $savePath = $listenerConfig->getSavePath();
+                    if ('' !== $savePath) {
+                        $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
+                        if ('' !== $tenant) {
+                            $fileName = $tenant . '/' . $fileName;
+                        }
+                        $fileName = $savePath . '/' . $fileName;
+                        if (!is_dir($fileName)) {
+                            mkdir($fileName, 0777, true);
+                        }
+                        $fileName .= '/' . $dataId;
+                    } else {
+                        $fileName = '';
+                    }
+                    $configItem = &$this->configs[$dataId][$group][$tenant];
                     try {
-                        $configItem = &$this->configs[$dataId][$group][$tenant];
                         $configItem['value'] = $value = $this->client->config->get($dataId, $group, $tenant, $type);
                         $configItem['type'] = $type;
                         $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
-                        $savePath = $listenerConfig->getSavePath();
-                        if ('' !== $savePath) {
-                            $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
-                            if ('' !== $tenant) {
-                                $fileName = $tenant . '/' . $fileName;
-                            }
-                            $fileName = $savePath . '/' . $fileName;
-                            if (!is_dir($fileName)) {
-                                mkdir($fileName, 0777, true);
-                            }
-                            $fileName .= '/' . $dataId;
+                        if ('' !== $fileName) {
                             file_put_contents($fileName, $value);
                         }
                     } catch (NacosApiException $e) {
+                        $configItem['value'] = $value = file_get_contents($fileName);
+                        $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
                     }
                 }
             }
