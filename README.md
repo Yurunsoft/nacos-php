@@ -69,6 +69,7 @@ $listenerConfig = new ListenerConfig([
     'timeout'  => 30000, // The config listener long polling timeout, in milliseconds. The result is returned immediately when the value is 0.
     'failedWaitTime' => 3000, // Waiting time to retry after failure, in milliseconds
     'savePath' => '', // Config save path, default is empty and not saved to file
+    'fileCacheTime' => 0, // The file cache time, defaulted to 0, is not affected by caching, and this configuration only affects pull operations.
 ]);
 $listener = $client->config->getConfigListener($listenerConfig);
 
@@ -84,7 +85,11 @@ $listener->addListener($dataId, $groupId, $tenant, function (\ConfigListener $li
 });
 
 // Pull configuration for all listeners (not required)
+// Forced pull, not affected by fileCacheTime
 $listener->pull();
+$listener->pull(true);
+// Pull, affected by fileCacheTime
+$listener->pull(false);
 
 // Manually perform a poll
 $listener->polling(); // The timeout in the ListenerConfig is used as the timeout time.

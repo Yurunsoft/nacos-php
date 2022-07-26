@@ -201,10 +201,12 @@ class ConfigTest extends BaseTest
                 $num = mt_rand();
                 $configProvider = $this->getProvider();
                 $configProvider->set(self::DATA_ID, self::GROUP_ID, (string) $num);
+                $configProvider->set(self::DATA_ID . '-file-cache', self::GROUP_ID, '1');
                 usleep(100000); // If v1.3.x does not wait for set, it will not get the value
                 $content = (string) ($num + 1);
                 $listenerConfig = new ListenerConfig();
                 $listenerConfig->setSavePath(\dirname(__DIR__) . '/tmp-config');
+                $listenerConfig->setFileCacheTime(3);
                 $listener = $configProvider->getConfigListener($listenerConfig);
                 $channel = new Channel();
                 $listener->addListener(self::DATA_ID, self::GROUP_ID, '', function (ConfigListener $listener, string $dataId, string $group, string $tenant) use ($channel) {
@@ -217,11 +219,14 @@ class ConfigTest extends BaseTest
                 }
                 $fileName = $dir . '/notfound';
                 file_put_contents($fileName, __FILE__);
+                file_put_contents($fileName . '-file-cache', __FILE__);
                 $listener->addListener('notfound', self::GROUP_ID, '', function () {
                     $this->assertTrue(false);
                 });
+                $listener->addListener(self::DATA_ID . '-file-cache', self::GROUP_ID);
                 $listener->pull();
                 $this->assertEquals(__FILE__, $listener->get('notfound', self::GROUP_ID));
+                $this->assertEquals('1', $listener->get(self::DATA_ID . '-file-cache', self::GROUP_ID));
                 $this->assertEquals((string) $num, $listener->get(self::DATA_ID, self::GROUP_ID));
                 Coroutine::create(function () use ($configProvider, $content) {
                     usleep(1);
@@ -233,6 +238,7 @@ class ConfigTest extends BaseTest
                 $fileName = \dirname(__DIR__) . '/tmp-config/' . self::GROUP_ID . '/' . self::DATA_ID;
                 $this->assertTrue(is_file($fileName));
                 $this->assertEquals($content, file_get_contents($fileName));
+                $this->assertEquals('1', $listener->get(self::DATA_ID . '-file-cache', self::GROUP_ID));
             } catch (\Throwable $exception) {
             }
         });

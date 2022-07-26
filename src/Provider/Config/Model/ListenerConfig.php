@@ -21,6 +21,11 @@ class ListenerConfig extends BaseModel
     protected string $savePath = '';
 
     /**
+     * File cache time, in seconds.
+     */
+    protected int $fileCacheTime = 0;
+
+    /**
      * Get Listener timeout time, in milliseconds.
      */
     public function getTimeout(): int
@@ -64,6 +69,18 @@ class ListenerConfig extends BaseModel
     public function setSavePath(string $savePath): self
     {
         $this->savePath = $savePath;
+
+        return $this;
+    }
+
+    public function getFileCacheTime(): int
+    {
+        return $this->fileCacheTime;
+    }
+
+    public function setFileCacheTime(int $fileCacheTime): self
+    {
+        $this->fileCacheTime = $fileCacheTime;
 
         return $this;
     }

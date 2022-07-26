@@ -35,7 +35,7 @@ class ConfigListener
     /**
      * Pull all configs.
      */
-    public function pull(): void
+    public function pull(bool $force = true): void
     {
         $listenerConfig = $this->listenerConfig;
         foreach ($this->listeningConfigs as $list1) {
@@ -59,16 +59,28 @@ class ConfigListener
                         $fileName = '';
                     }
                     $configItem = &$this->configs[$dataId][$group][$tenant];
-                    try {
-                        $configItem['value'] = $value = $this->client->config->get($dataId, $group, $tenant, $type);
-                        $configItem['type'] = $type;
-                        $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
-                        if ('' !== $fileName) {
-                            file_put_contents($fileName, $value);
+                    $isFile = null;
+                    if ($force || !('' !== $fileName && ($fileCacheTime ??= $listenerConfig->getFileCacheTime()) > 0 && ($isFile = is_file($fileName)) && time() - filemtime($fileName) < $fileCacheTime)) {
+                        try {
+                            $configItem['value'] = $value = $this->client->config->get($dataId, $group, $tenant, $type);
+                            $configItem['type'] = $type;
+                            $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
+                            if ('' !== $fileName) {
+                                file_put_contents($fileName, $value);
+                            }
+                        } catch (NacosApiException $e) {
+                            if ('' !== $fileName && ($isFile ??= is_file($fileName))) {
+                                $configItem['value'] = $value = file_get_contents($fileName);
+                                $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
+                            } else {
+                                throw $e;
+                            }
                         }
-                    } catch (NacosApiException $e) {
-                        $configItem['value'] = $value = file_get_contents($fileName);
-                        $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
+                    } else {
+                        if ('' !== $fileName && ($isFile ??= is_file($fileName))) {
+                            $configItem['value'] = $value = file_get_contents($fileName);
+                            $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
+                        }
                     }
                 }
             }

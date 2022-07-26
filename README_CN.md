@@ -127,6 +127,7 @@ $listenerConfig = new ListenerConfig([
     'timeout'  => 30000, // 配置监听器长轮询超时时间，单位：毫秒。值为 0 时立即返回结果。
     'failedWaitTime' => 3000, // 失败后等待重试时间，单位：毫秒
     'savePath' => '', // 配置保存路径，默认为空不保存到文件
+    'fileCacheTime' => 0, // 文件缓存时间，默认为0时不受缓存影响，此配置只影响 pull 操作。
 ]);
 $listener = $client->config->getConfigListener($listenerConfig);
 
@@ -142,7 +143,11 @@ $listener->addListener($dataId, $groupId, $tenant, function (ConfigListener $lis
 });
 
 // 拉取所有监听的配置（非必须）
+// 强制拉取，不受 fileCacheTime 影响
 $listener->pull();
+$listener->pull(true);
+// 拉取，会受到 fileCacheTime 影响
+$listener->pull(false);
 
 // 手动执行一次轮询
 $listener->polling(); // ListenerConfig 中的 timeout 作为超时时间
