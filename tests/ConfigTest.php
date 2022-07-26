@@ -211,7 +211,11 @@ class ConfigTest extends BaseTest
                     $listener->stop();
                     $channel->push($listener->get($dataId, $group, $tenant));
                 });
-                $fileName = \dirname(__DIR__) . '/tmp-config/' . self::GROUP_ID . '/notfound';
+                $dir = \dirname(__DIR__) . '/tmp-config/' . self::GROUP_ID;
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0777, true);
+                }
+                $fileName = $dir . '/notfound';
                 file_put_contents($fileName, __FILE__);
                 $listener->addListener('notfound', self::GROUP_ID, '', function () {
                     $this->assertTrue(false);
