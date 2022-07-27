@@ -7,6 +7,7 @@ namespace Yurun\Nacos\Provider\Config;
 use Psr\Log\LogLevel;
 use Yurun\Nacos\Client;
 use Yurun\Nacos\Exception\NacosApiException;
+use Yurun\Nacos\Exception\NacosException;
 use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
 use Yurun\Nacos\Provider\Config\Model\ListenerItem;
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
@@ -44,43 +45,22 @@ class ConfigListener
                     $dataId = $item->getDataId();
                     $group = $item->getGroup();
                     $tenant = $item->getTenant();
-                    $savePath = $listenerConfig->getSavePath();
-                    if ('' !== $savePath) {
-                        $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
-                        if ('' !== $tenant) {
-                            $fileName = $tenant . '/' . $fileName;
-                        }
-                        $fileName = $savePath . '/' . $fileName;
-                        if (!is_dir($fileName)) {
-                            mkdir($fileName, 0777, true);
-                        }
-                        $fileName .= '/' . $dataId;
-                    } else {
-                        $fileName = '';
-                    }
-                    $configItem = &$this->configs[$dataId][$group][$tenant];
-                    $isFile = null;
-                    if ($force || !('' !== $fileName && ($fileCacheTime ??= $listenerConfig->getFileCacheTime()) > 0 && ($isFile = is_file($fileName)) && time() - filemtime($fileName) < $fileCacheTime)) {
+                    if ($force || !$this->loadCache($dataId, $group, $tenant, $listenerConfig->getFileCacheTime())) {
                         try {
+                            $configItem = &$this->configs[$dataId][$group][$tenant];
                             $configItem['value'] = $value = $this->client->config->get($dataId, $group, $tenant, $type);
                             $configItem['type'] = $type;
                             $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
-                            if ('' !== $fileName) {
-                                file_put_contents($fileName, $value);
-                            }
+                            $this->saveCache($dataId, $group, $tenant, $value, $type);
                         } catch (NacosApiException $e) {
-                            if ('' !== $fileName && ($isFile ??= is_file($fileName))) {
-                                $configItem['value'] = $value = file_get_contents($fileName);
+                            if ($this->loadCache($dataId, $group, $tenant)) {
                                 $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
                             } else {
                                 throw $e;
                             }
                         }
-                    } else {
-                        if ('' !== $fileName && ($isFile ??= is_file($fileName))) {
-                            $configItem['value'] = $value = file_get_contents($fileName);
-                            $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
-                        }
+                    } elseif ($this->loadCache($dataId, $group, $tenant)) {
+                        $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
                     }
                 }
             }
@@ -123,19 +103,7 @@ class ConfigListener
                         $configItem['value'] = $value = $configProvider->get($dataId, $group, $tenant, $type);
                         $configItem['type'] = $type;
                         $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5(md5($value));
-                        $savePath = $listenerConfig->getSavePath();
-                        if ('' !== $savePath) {
-                            $fileName = ('' === $group ? 'DEFAULT_GROUP' : $group);
-                            if ('' !== $tenant) {
-                                $fileName = $tenant . '/' . $fileName;
-                            }
-                            $fileName = $savePath . '/' . $fileName;
-                            if (!is_dir($fileName)) {
-                                mkdir($fileName, 0777, true);
-                            }
-                            $fileName .= '/' . $dataId;
-                            file_put_contents($fileName, $value);
-                        }
+                        $this->saveCache($dataId, $group, $tenant, $value, $type);
                     }
                     if (isset($configItem['callback'])) {
                         $configItem['callback']($this, $dataId, $group, $tenant);
@@ -183,5 +151,64 @@ class ConfigListener
     public function getParsed(string $dataId, string $group, string $tenant = '', ?string &$type = null)
     {
         return $this->client->config->parseConfig($this->get($dataId, $group, $tenant, $type), $type);
+    }
+
+    protected function saveCache(string $dataId, string $group, string $tenant, string $value, string $type): bool
+    {
+        $savePath = $this->listenerConfig->getSavePath();
+        if ('' === $savePath) {
+            return false;
+        }
+        $group = ('' === $group ? 'DEFAULT_GROUP' : $group);
+        $fileName = $savePath . '/' . $group . ('' === $tenant ? '' : ('/' . $tenant));
+        if (!is_dir($fileName)) {
+            mkdir($fileName, 0777, true);
+        }
+        $fileName .= '/' . $dataId;
+        file_put_contents($fileName, $value);
+        file_put_contents($fileName . '.meta', json_encode([
+            'type'           => $type,
+            'lastUpdateTime' => time(),
+        ]));
+
+        return true;
+    }
+
+    protected function loadCache(string $dataId, string $group, string $tenant, int $fileCacheTime = 0): bool
+    {
+        $savePath = $this->listenerConfig->getSavePath();
+        if ('' === $savePath) {
+            return false;
+        }
+        $group = ('' === $group ? 'DEFAULT_GROUP' : $group);
+        $fileName = $savePath . '/' . $group . ('' === $tenant ? '' : ('/' . $tenant)) . '/' . $dataId;
+        if (!is_file($fileName)) {
+            return false;
+        }
+        $metaFileName = $fileName . '.meta';
+        if (is_file($metaFileName)) {
+            $value = file_get_contents($metaFileName);
+            if (false === $value) {
+                throw new NacosException(sprintf('Failed to read the contents of file %s', $metaFileName));
+            }
+            $meta = json_decode($value, true);
+            if (!$meta) {
+                return false;
+            }
+        } else {
+            $meta = [];
+        }
+        if ($fileCacheTime > 0 && (time() - ($meta['lastUpdateTime'] ?? 0) > $fileCacheTime)) {
+            return false;
+        }
+        $value = file_get_contents($fileName);
+        if (false === $value) {
+            throw new NacosException(sprintf('Failed to read the contents of file %s', $fileName));
+        }
+        $configItem = &$this->configs[$dataId][$group][$tenant];
+        $configItem['value'] = $value;
+        $configItem['type'] = $meta['type'] ?? 'text';
+
+        return true;
     }
 }
