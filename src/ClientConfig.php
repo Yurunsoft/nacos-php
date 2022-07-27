@@ -32,6 +32,16 @@ class ClientConfig extends BaseModel
      */
     protected int $listenerTimeout = 30000;
 
+    /**
+     * Connection pool max connections.
+     */
+    protected int $maxConnections = 16;
+
+    /**
+     * Connection pool wait timeout when get connection, in seconds.
+     */
+    protected int $poolWaitTimeout = 30;
+
     public function getHost(): string
     {
         return $this->host;
@@ -142,6 +152,30 @@ class ClientConfig extends BaseModel
     public function setListenerTimeout(int $listenerTimeout): self
     {
         $this->listenerTimeout = $listenerTimeout;
+
+        return $this;
+    }
+
+    public function getMaxConnections(): int
+    {
+        return $this->maxConnections;
+    }
+
+    public function setMaxConnections(int $maxConnections): self
+    {
+        $this->maxConnections = $maxConnections;
+
+        return $this;
+    }
+
+    public function getPoolWaitTimeout(): int
+    {
+        return $this->poolWaitTimeout;
+    }
+
+    public function setPoolWaitTimeout(int $poolWaitTimeout): self
+    {
+        $this->poolWaitTimeout = $poolWaitTimeout;
 
         return $this;
     }

@@ -15,6 +15,7 @@ use Yurun\Nacos\Provider\Ns\NamespaceProvider;
 use Yurun\Nacos\Provider\Operator\OperatorProvider;
 use Yurun\Nacos\Provider\Service\ServiceProvider;
 use Yurun\Util\HttpRequest;
+use Yurun\Util\YurunHttp\ConnectionPool;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\RequestHeader;
 use Yurun\Util\YurunHttp\Http\Psr7\Consts\StatusCode;
 use Yurun\Util\YurunHttp\Http\Response;
@@ -53,7 +54,9 @@ class Client
     {
         $this->clientConfig = $config;
         $this->logger = new Logger($logger);
-        $this->httpRequest = new HttpRequest();
+        $this->httpRequest = $httpRequest = new HttpRequest();
+        $httpRequest->connectionPool(true);
+        ConnectionPool::setConfig($this->buildUrl(), $config->getMaxConnections(), $config->getPoolWaitTimeout());
     }
 
     /**
@@ -146,7 +149,12 @@ class Client
         }
     }
 
-    protected function buildUrl(string $path): string
+    public function reopen(): void
+    {
+        $this->httpRequest->open();
+    }
+
+    protected function buildUrl(string $path = ''): string
     {
         $config = $this->getConfig();
 

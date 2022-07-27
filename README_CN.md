@@ -47,13 +47,18 @@ $config = new ClientConfig([
     'timeout'             => 60000, // 网络请求超时时间，单位：毫秒
     'ssl'                 => false, // 是否使用 ssl(https) 请求
     'authorizationBearer' => false, // 是否使用请求头 Authorization: Bearer {accessToken} 方式传递 Token，旧版本 Nacos 需要设为 true
+    'maxConnections'      => 16, // 连接池最大连接数
+    'poolWaitTimeout'     => 30, // 连接池获取连接等待超时时间
 ]);
 // 实例化客户端
 $client = new Client($config);
 
-// 启用日志，支持 PSR-3
+// 启用日志，支持 PSR-3，非必须
 $logger = new \Monolog\Logger();
 $client = new Client($config, $logger);
+
+// 重新打开客户端，可以在 Swoole worker、process 最开始执行
+$client->reopen();
 ```
 
 ### 提供者

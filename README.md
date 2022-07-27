@@ -47,70 +47,21 @@ $config = new ClientConfig([
     'timeout'             => 60000, // Network request timeout time, in milliseconds
     'ssl'                 => false, // Whether to use ssl(https) requests
     'authorizationBearer' => false, // Whether to use the request header Authorization: Bearer {accessToken} to pass Token, older versions of Nacos need to be set to true
+    'maxConnections'      => 16, // Connection pool max connections
+    'poolWaitTimeout'     => 30, // Connection pool wait timeout when get connection, in seconds
 ]);
-// Instantiating the client
+// Instantiating the client, Not required
 $client = new Client($config);
 
 // Enable log, Support PSR-3
 $logger = new \Monolog\Logger();
 $client = new Client($config, $logger);
+
+// Reopening the client, you can execute the first execution in the Swoole worker, process
+$client->reopen();
 ```
 
 ### Providers
-
-#### Config listener
-
-```php
-use Yurun\Nacos\Provider\Config\ConfigListener;
-use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
-
-// Get config listener
-$listenerConfig = new ListenerConfig([
-    'timeout'  => 30000, // The config listener long polling timeout, in milliseconds. The result is returned immediately when the value is 0.
-    'failedWaitTime' => 3000, // Waiting time to retry after failure, in milliseconds
-    'savePath' => '', // Config save path, default is empty and not saved to file
-    'fileCacheTime' => 0, // The file cache time, defaulted to 0, is not affected by caching, and this configuration only affects pull operations.
-]);
-$listener = $client->config->getConfigListener($listenerConfig);
-
-$dataId = 'dataId';
-$groupId = 'groupId';
-$tenant = '';
-
-// Add listening item
-$listener->addListener($dataId, $groupId, $tenant);
-// Add listening item with callback
-$listener->addListener($dataId, $groupId, $tenant, function (\ConfigListener $listener, string $dataId, string $group, string $tenant) {
-    // $listener->stop();
-});
-
-// Pull configuration for all listeners (not required)
-// Forced pull, not affected by fileCacheTime
-$listener->pull();
-$listener->pull(true);
-// Pull, affected by fileCacheTime
-$listener->pull(false);
-
-// Manually perform a poll
-$listener->polling(); // The timeout in the ListenerConfig is used as the timeout time.
-$listener->polling(30000); // Specify the timeout period
-$listener->polling(0); // Return results immediately
-
-// Start the polling listener and do not continue with the following statements until you stop
-$listener->start();
-
-// To get the configuration cache from the listener, you need to call it in another coroutine
-$value = $listener->get($dataId, $groupId, $tenant, $type);
-var_dump($type); // Data type
-
-// To get the configuration cache (Arrays or objects after parsing) from the listener, you need to call it in another coroutine
-$value = $listener->getParsed($dataId, $groupId, $tenant, $type);
-var_dump($type); // Data type
-```
-
-#### Manual Listening Configuration
-
-> Recommend using the config listener
 
 ```php
 // Get provider from client
@@ -163,6 +114,60 @@ $client->config->delete('dataId', 'group', 'value');
 ```
 
 #### Listen config
+
+#### Config listener
+
+```php
+use Yurun\Nacos\Provider\Config\ConfigListener;
+use Yurun\Nacos\Provider\Config\Model\ListenerConfig;
+
+// Get config listener
+$listenerConfig = new ListenerConfig([
+    'timeout'  => 30000, // The config listener long polling timeout, in milliseconds. The result is returned immediately when the value is 0.
+    'failedWaitTime' => 3000, // Waiting time to retry after failure, in milliseconds
+    'savePath' => '', // Config save path, default is empty and not saved to file
+    'fileCacheTime' => 0, // The file cache time, defaulted to 0, is not affected by caching, and this configuration only affects pull operations.
+]);
+$listener = $client->config->getConfigListener($listenerConfig);
+
+$dataId = 'dataId';
+$groupId = 'groupId';
+$tenant = '';
+
+// Add listening item
+$listener->addListener($dataId, $groupId, $tenant);
+// Add listening item with callback
+$listener->addListener($dataId, $groupId, $tenant, function (\ConfigListener $listener, string $dataId, string $group, string $tenant) {
+    // $listener->stop();
+});
+
+// Pull configuration for all listeners (not required)
+// Forced pull, not affected by fileCacheTime
+$listener->pull();
+$listener->pull(true);
+// Pull, affected by fileCacheTime
+$listener->pull(false);
+
+// Manually perform a poll
+$listener->polling(); // The timeout in the ListenerConfig is used as the timeout time.
+$listener->polling(30000); // Specify the timeout period
+$listener->polling(0); // Return results immediately
+
+// Start the polling listener and do not continue with the following statements until you stop
+$listener->start();
+
+// To get the configuration cache from the listener, you need to call it in another coroutine
+$value = $listener->get($dataId, $groupId, $tenant, $type);
+var_dump($type); // Data type
+
+// To get the configuration cache (Arrays or objects after parsing) from the listener, you need to call it in another coroutine
+$value = $listener->getParsed($dataId, $groupId, $tenant, $type);
+var_dump($type); // Data type
+```
+
+##### Manual Listening Configuration
+
+> Recommend using the config listener
 
 ```php
 use Yurun\Nacos\Provider\Config\Model\ListenerRequest;
