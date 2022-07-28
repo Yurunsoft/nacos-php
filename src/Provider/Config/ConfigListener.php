@@ -56,7 +56,7 @@ class ConfigListener
                             if ($this->loadCache($dataId, $group, $tenant)) {
                                 $this->listeningConfigs[$dataId][$group][$tenant]->setContentMD5('');
                             } else {
-                                throw $e;
+                                $this->client->getLogger()->logOrThrow(LogLevel::ERROR, sprintf('Nacos pull failed: %s', $e), [], $e);
                             }
                         }
                     } elseif ($this->loadCache($dataId, $group, $tenant)) {
