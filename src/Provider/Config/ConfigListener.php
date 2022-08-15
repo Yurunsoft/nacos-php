@@ -150,7 +150,14 @@ class ConfigListener
      */
     public function getParsed(string $dataId, string $group, string $tenant = '', ?string &$type = null)
     {
-        return $this->client->config->parseConfig($this->get($dataId, $group, $tenant, $type), $type);
+        $value = $this->get($dataId, $group, $tenant, $newType);
+        if ('' !== $newType && null !== $newType) {
+            $type = $newType;
+        } else {
+            $type ??= '';
+        }
+
+        return $this->client->config->parseConfig($value, $type);
     }
 
     protected function saveCache(string $dataId, string $group, string $tenant, string $value, string $type): bool
