@@ -37,7 +37,12 @@ class ConfigProvider extends BaseProvider
      */
     public function getParsedConfig(string $dataId, string $group, string $tenant = '', ?string &$type = null)
     {
-        $value = $this->get($dataId, $group, $tenant, $type);
+        $value = $this->get($dataId, $group, $tenant, $newType);
+        if ('' !== $newType && null !== $newType) {
+            $type = $newType;
+        } else {
+            $type ??= '';
+        }
 
         return $this->parseConfig($value, $type);
     }
