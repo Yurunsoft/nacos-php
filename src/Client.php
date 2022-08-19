@@ -154,6 +154,11 @@ class Client
         $this->httpRequest->open();
     }
 
+    public function close(): void
+    {
+        $this->httpRequest->close();
+    }
+
     protected function buildUrl(string $path = ''): string
     {
         $config = $this->getConfig();

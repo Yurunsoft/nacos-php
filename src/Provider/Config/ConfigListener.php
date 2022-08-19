@@ -75,11 +75,13 @@ class ConfigListener
                 usleep(100_000);
                 continue;
             }
-            $this->polling();
+            if (!$this->polling()) {
+                usleep($this->listenerConfig->getFailedTimeout() * 1000);
+            }
         }
     }
 
-    public function polling(?int $timeout = null): void
+    public function polling(?int $timeout = null): bool
     {
         try {
             $configProvider = $this->client->config;
@@ -110,9 +112,12 @@ class ConfigListener
                     }
                 }
             }
+
+            return true;
         } catch (\Throwable $th) {
             $this->client->getLogger()->logOrThrow(LogLevel::ERROR, sprintf('Nacos listen failed: %s', $th), [], $th);
-            usleep($listenerConfig->getFailedTimeout() * 1000);
+
+            return false;
         }
     }
 
