@@ -29,7 +29,7 @@ class Host extends BaseModel
 
     protected bool $enabled = false;
 
-    protected bool $ephemeral = false;
+    protected bool $ephemeral = true;
 
     protected string $clusterName = '';
 

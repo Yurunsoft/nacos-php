@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yurun\Nacos\Provider\Instance;
 
 use Yurun\Nacos\Provider\BaseProvider;
+use Yurun\Nacos\Provider\Instance\Model\BeatResponse;
 use Yurun\Nacos\Provider\Instance\Model\DetailResponse;
 use Yurun\Nacos\Provider\Instance\Model\ListResponse;
 use Yurun\Nacos\Provider\Instance\Model\RsInfo;
@@ -18,7 +19,7 @@ class InstanceProvider extends BaseProvider
     /**
      * @param string|float $weight
      */
-    public function register(string $ip, int $port, string $serviceName, string $namespaceId = '', $weight = 1, bool $enabled = true, bool $healthy = true, string $metadata = '', string $clusterName = '', string $groupName = '', bool $ephemeral = false): bool
+    public function register(string $ip, int $port, string $serviceName, string $namespaceId = '', $weight = 1, bool $enabled = true, bool $healthy = true, string $metadata = '', string $clusterName = '', string $groupName = '', bool $ephemeral = true): bool
     {
         return 'ok' === $this->client->request(self::INSTANCE_API_APTH, [
             'ip'          => $ip,
@@ -35,7 +36,7 @@ class InstanceProvider extends BaseProvider
         ], RequestMethod::POST)->body();
     }
 
-    public function deregister(string $ip, int $port, string $serviceName, string $namespaceId = '', string $clusterName = '', string $groupName = '', bool $ephemeral = false): bool
+    public function deregister(string $ip, int $port, string $serviceName, string $namespaceId = '', string $clusterName = '', string $groupName = '', bool $ephemeral = true): bool
     {
         return 'ok' === $this->client->request(self::INSTANCE_API_APTH, [
             'ip'          => $ip,
@@ -51,7 +52,7 @@ class InstanceProvider extends BaseProvider
     /**
      * @param string|float $weight
      */
-    public function update(string $ip, int $port, string $serviceName, string $namespaceId = '', $weight = 1, bool $enabled = true, bool $healthy = true, string $metadata = '', string $clusterName = '', string $groupName = '', bool $ephemeral = false): bool
+    public function update(string $ip, int $port, string $serviceName, string $namespaceId = '', $weight = 1, bool $enabled = true, bool $healthy = true, string $metadata = '', string $clusterName = '', string $groupName = '', bool $ephemeral = true): bool
     {
         return 'ok' === $this->client->request(self::INSTANCE_API_APTH, [
             'ip'          => $ip,
@@ -85,7 +86,7 @@ class InstanceProvider extends BaseProvider
     /**
      * @param string|string[] $clusters
      */
-    public function detail(string $ip, int $port, string $serviceName, string $groupName = '', string $namespaceId = '', $clusters = '', bool $healthyOnly = false, bool $ephemeral = false): DetailResponse
+    public function detail(string $ip, int $port, string $serviceName, string $groupName = '', string $namespaceId = '', $clusters = '', bool $healthyOnly = false, bool $ephemeral = true): DetailResponse
     {
         return $this->client->request(self::INSTANCE_API_APTH, [
             'ip'          => $ip,
@@ -99,9 +100,9 @@ class InstanceProvider extends BaseProvider
         ], RequestMethod::GET, [], DetailResponse::class);
     }
 
-    public function beat(string $serviceName, RsInfo $beat, string $groupName = '', string $namespaceId = '', bool $ephemeral = false): bool
+    public function beat(string $serviceName, RsInfo $beat, string $groupName = '', string $namespaceId = '', bool $ephemeral = true): BeatResponse
     {
-        return 'ok' === $this->client->request(self::INSTANCE_API_APTH, [
+        return $this->client->request('nacos/v1/ns/instance/beat', [
             'serviceName' => $serviceName,
             'ip'          => $beat->getIp(),
             'port'        => $beat->getPort(),
@@ -109,6 +110,6 @@ class InstanceProvider extends BaseProvider
             'beat'        => json_encode($beat),
             'groupName'   => $groupName,
             'ephemeral'   => StringUtil::convertBoolToString($ephemeral),
-        ], RequestMethod::PUT)->body();
+        ], RequestMethod::PUT, [], BeatResponse::class);
     }
 }

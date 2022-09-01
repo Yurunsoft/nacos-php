@@ -35,13 +35,13 @@ class RsInfo extends BaseModel
 
     protected int $port = 0;
 
-    protected String $ip = '';
+    protected string $ip = '';
 
-    protected String $serviceName = '';
+    protected string $serviceName = '';
 
-    protected String $ak = '';
+    protected string $ak = '';
 
-    protected String $cluster = '';
+    protected string $cluster = '';
 
     /**
      * @var float|string
@@ -50,7 +50,7 @@ class RsInfo extends BaseModel
 
     protected bool $ephemeral = true;
 
-    protected array $metadata = [];
+    protected ?array $metadata = null;
 
     /**
      * @return float|string
@@ -130,7 +130,7 @@ class RsInfo extends BaseModel
         return $this->ephemeral;
     }
 
-    public function getMetadata(): array
+    public function getMetadata(): ?array
     {
         return $this->metadata;
     }
@@ -237,7 +237,7 @@ class RsInfo extends BaseModel
         return $this;
     }
 
-    public function setMetadata(array $metadata): self
+    public function setMetadata(?array $metadata): self
     {
         $this->metadata = $metadata;
 
