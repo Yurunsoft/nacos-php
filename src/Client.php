@@ -74,7 +74,7 @@ class Client
             throw new NacosException(sprintf('Provider %s does not exists', $name));
         }
 
-        return new $this->providersConfig[$name]($this);
+        return $this->providers[$name] = new $this->providersConfig[$name]($this);
     }
 
     public function getConfig(): ClientConfig
