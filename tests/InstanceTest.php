@@ -45,7 +45,7 @@ class InstanceTest extends BaseTest
         $beat->setPort(self::PORT);
         $beat->setServiceName(self::SERVICE_NAME);
         $response = $this->getProvider()->beat(self::SERVICE_NAME, $beat);
-        $this->assertEquals(10200, $response->getCode());
+        $this->assertGreaterThan(0, $response->getClientBeatInterval());
     }
 
     /**
