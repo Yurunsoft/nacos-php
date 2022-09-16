@@ -20,7 +20,7 @@ class ServiceDetailResponse extends BaseResponse
      */
     protected $protectThreshold = 0;
 
-    protected array $metadata = [];
+    protected ?array $metadata = null;
 
     protected array $selector = [];
 
@@ -70,7 +70,7 @@ class ServiceDetailResponse extends BaseResponse
     /**
      * Get the value of metadata.
      */
-    public function getMetadata(): array
+    public function getMetadata(): ?array
     {
         return $this->metadata;
     }

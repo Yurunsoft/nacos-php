@@ -12,7 +12,7 @@ class Cluster extends BaseModel
 
     protected ?HealthChecker $healthChecker = null;
 
-    protected array $metadata = [];
+    protected ?array $metadata = null;
 
     public function __construct(array $data = [])
     {
@@ -36,7 +36,7 @@ class Cluster extends BaseModel
         return $this->healthChecker;
     }
 
-    public function getMetadata(): array
+    public function getMetadata(): ?array
     {
         return $this->metadata;
     }
