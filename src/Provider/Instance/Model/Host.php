@@ -23,7 +23,7 @@ class Host extends BaseModel
      */
     protected $weight = 0;
 
-    protected array $metadata = [];
+    protected ?array $metadata = null;
 
     protected bool $healthy = false;
 
@@ -76,7 +76,7 @@ class Host extends BaseModel
         return $this->weight;
     }
 
-    public function getMetadata(): array
+    public function getMetadata(): ?array
     {
         return $this->metadata;
     }
