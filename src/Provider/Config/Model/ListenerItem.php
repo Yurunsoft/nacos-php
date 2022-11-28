@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Yurun\Nacos\Provider\Config\Model;
 
-use Stringable;
-
-class ListenerItem implements Stringable
+class ListenerItem implements \Stringable
 {
     protected string $dataId = '';
 

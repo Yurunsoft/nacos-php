@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Yurun\Nacos\Provider\Model;
 
-use JsonSerializable;
 use Yurun\Util\YurunHttp\Http\Response;
 
-abstract class BaseResponse implements JsonSerializable
+abstract class BaseResponse implements \JsonSerializable
 {
     private Response $response;
 

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Yurun\Nacos\Model;
 
-use JsonSerializable;
 use Yurun\Nacos\Provider\Traits\TInitProperties;
 
-abstract class BaseModel implements JsonSerializable
+abstract class BaseModel implements \JsonSerializable
 {
     use TInitProperties;
 

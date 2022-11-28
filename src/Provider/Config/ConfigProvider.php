@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yurun\Nacos\Provider\Config;
 
-use function yaml_parse;
-
 use Yurun\Nacos\Provider\BaseProvider;
 use Yurun\Nacos\Provider\Config\Model\HistoryListResponse;
 use Yurun\Nacos\Provider\Config\Model\HistoryResponse;
@@ -63,7 +61,7 @@ class ConfigProvider extends BaseProvider
                 return simplexml_load_string($value, 'SimpleXMLElement', \LIBXML_NOCDATA);
             case 'yml':
             case 'yaml':
-                return yaml_parse($value);
+                return \yaml_parse($value);
             default:
                 return $value;
         }
