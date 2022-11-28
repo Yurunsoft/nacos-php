@@ -42,6 +42,8 @@ class ClientConfig extends BaseModel
      */
     protected int $poolWaitTimeout = 30;
 
+    protected array $configParser = [];
+
     public function getHost(): string
     {
         return $this->host;
@@ -176,6 +178,18 @@ class ClientConfig extends BaseModel
     public function setPoolWaitTimeout(int $poolWaitTimeout): self
     {
         $this->poolWaitTimeout = $poolWaitTimeout;
+
+        return $this;
+    }
+
+    public function getConfigParser(): array
+    {
+        return $this->configParser;
+    }
+
+    public function setConfigParser(array $configParser): self
+    {
+        $this->configParser = $configParser;
 
         return $this;
     }

@@ -52,6 +52,10 @@ class ConfigProvider extends BaseProvider
      */
     public function parseConfig(string $value, string $type)
     {
+        $configParser = $this->client->getConfig()->getConfigParser();
+        if (isset($configParser[$type])) {
+            return $configParser[$type]($value);
+        }
         switch ($type) {
             case 'json':
                 return json_decode($value, true, 512, \JSON_THROW_ON_ERROR);

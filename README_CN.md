@@ -49,6 +49,11 @@ $config = new ClientConfig([
     'authorizationBearer' => false, // 是否使用请求头 Authorization: Bearer {accessToken} 方式传递 Token，旧版本 Nacos 需要设为 true
     'maxConnections'      => 16, // 连接池最大连接数
     'poolWaitTimeout'     => 30, // 连接池获取连接等待超时时间
+    // 自定义配置处理器，把字符串配置值转换为任意类型（比如数组），可以覆盖默认的处理
+    'configParser'        => [
+        // 类型名称 => 闭包(字符串配置值): 任意类型
+        'json' => static fn (string $value): array => json_decode($value, true),
+    ],
 ]);
 // 实例化客户端
 $client = new Client($config);

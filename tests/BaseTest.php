@@ -25,6 +25,9 @@ abstract class BaseTest extends TestCase
             'username'            => getenv('NACOS_TEST_USERNAME') ?: 'nacos',
             'password'            => getenv('NACOS_TEST_PASSWORD') ?: 'nacos',
             'authorizationBearer' => true,
+            'configParser'        => [
+                'test' => static fn (string $value): array => ['data' => $value],
+            ],
         ]));
     }
 

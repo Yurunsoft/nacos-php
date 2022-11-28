@@ -246,4 +246,13 @@ class ConfigTest extends BaseTest
             throw $exception;
         }
     }
+
+    public function testConfigParser(): void
+    {
+        $this->assertTrue($this->getProvider()->set(self::DATA_ID, 'ConfigTest', 'value'));
+        usleep(100000); // If v1.3.x does not wait for set, it will not get the value
+        $this->assertEquals('value', $value = $this->getProvider()->get(self::DATA_ID, 'ConfigTest', '', $type));
+        $this->assertEquals('text', $type);
+        $this->assertEquals(['data' => 'value'], $this->getProvider()->parseConfig($value, 'test'));
+    }
 }

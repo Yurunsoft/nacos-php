@@ -49,6 +49,11 @@ $config = new ClientConfig([
     'authorizationBearer' => false, // Whether to use the request header Authorization: Bearer {accessToken} to pass Token, older versions of Nacos need to be set to true
     'maxConnections'      => 16, // Connection pool max connections
     'poolWaitTimeout'     => 30, // Connection pool wait timeout when get connection, in seconds
+    // Custom configuration processor to convert string configuration values to arbitrary types (e.g. arrays), which can override the default processing
+    'configParser'        => [
+        // type Name => callback(string value): mixed
+        'json' => static fn (string $value): array => json_decode($value, true),
+    ],
 ]);
 // Instantiating the client, Not required
 $client = new Client($config);
