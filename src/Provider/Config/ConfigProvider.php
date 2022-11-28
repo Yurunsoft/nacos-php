@@ -61,7 +61,7 @@ class ConfigProvider extends BaseProvider
                 return simplexml_load_string($value, 'SimpleXMLElement', \LIBXML_NOCDATA);
             case 'yml':
             case 'yaml':
-                return \yaml_parse($value);
+                return yaml_parse($value);
             default:
                 return $value;
         }
