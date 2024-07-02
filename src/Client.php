@@ -105,7 +105,7 @@ class Client
         } else {
             $queryParams = [];
         }
-        if ($useAccessToken && $config->getUsername() && $config->getPassword()) {
+        if ($useAccessToken && '' !== $config->getUsername() && '' !== $config->getPassword()) {
             $queryParams['accessToken'] = $accessToken = $this->auth->getAccessToken();
             if ($config->getAuthorizationBearer()) {
                 $this->httpRequest->header(RequestHeader::AUTHORIZATION, 'Bearer ' . $accessToken);
